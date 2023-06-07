@@ -14,6 +14,11 @@ namespace Tienda_G6.Controllers
             return View();
         }
 
+        public ActionResult Login()
+        {
+            return View();
+        }
+
         [HttpGet]
         public ActionResult Registro()
         {
