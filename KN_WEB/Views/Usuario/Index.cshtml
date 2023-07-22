@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+    <!-- Estilos adicionales específicos para esta página -->
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestion de Usuarios</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Usuarios</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+        });
+    </script>
+    <script>
+        function cerrarForm() {
+            document.getElementById("formulario").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+}
+
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Usuarios</h3>
+            </div>
+            <form action="/registrarCliente/" method="POST" id="formulario">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="txtIdentificacion" class="form-label">Identificacion</label>
+                            <input type="text" class="form-control" id="txtIdentificacion" name="txtIdentificacion" placeholder="Identificacion" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="txtNombre" name="txtNombre" placeholder="Nombre" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="txtEmail" name="txtEmail" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtContraseña" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="txtContraseña" name="txtContraseña" placeholder="Contraseña" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-control" id="ddlRol" name="estado" required>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ddlRol" class="form-label">Rol</label>
+                            <select class="form-control" id="ddlRol" name="ddlRol" required>
+                                <option value="1">Usuario Administrador</option>
+                                <option value="2">Usuario normal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Lista de Usuarios</h3>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-solid fa-user-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Identificacion</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Estado</th>
+                            <th>Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>ID</th>
+                            <th>Identificacion</th>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Estado</th>
+                            <th>Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
