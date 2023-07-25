@@ -1,0 +1,178 @@
+﻿@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+    <!-- Estilos adicionales específicos para esta página -->
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestion de Usuarios</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Usuarios</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var userId = $(this).data("id");
+
+                var row = $(this).closest("tr");
+
+                // Obtener los datos de las celdas de la fila
+                var identificacion = row.find("td:eq(1)").text();
+                var nombre = row.find("td:eq(2)").text();
+                var email = row.find("td:eq(3)").text();
+                var estado = row.find("td:eq(4)").text();
+                var rol = row.find("td:eq(5)").text();
+
+                // Llenar el formulario con los datos
+                $("#txtIdentificacion").val(identificacion);
+                $("#txtNombre").val(nombre);
+                $("#txtEmail").val(email);
+                $("#estado").val(estado);
+                $("#rol").val(rol);
+
+                // Mostrar el formulario
+                $("#formContainer").show();
+            });
+        });
+    </script>
+
+    <script>
+        function cerrarForm() {
+            document.getElementById("formulario").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+}
+
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Usuarios</h3>
+            </div>
+            <form action="/registrarCliente/" method="POST" id="formulario">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="txtIdentificacion" class="form-label">Identificacion</label>
+                            <input type="text" class="form-control" id="txtIdentificacion" name="txtIdentificacion" placeholder="Identificacion" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtNombre" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="txtNombre" name="txtNombre" placeholder="Nombre" required />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="txtEmail" name="txtEmail" placeholder="Email" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="txtContraseña" class="form-label">Contraseña</label>
+                            <input type="password" class="form-control" id="txtContraseña" name="txtContraseña" placeholder="Contraseña" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="estado" class="form-label">Estado</label>
+                            <select class="form-control" id="estado" name="estado" required>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="rol" class="form-label">Rol</label>
+                            <select class="form-control" id="rol" name="Rol" required>
+                                <option value="1">Usuario Administrador</option>
+                                <option value="2">Usuario normal</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Lista de Usuarios</h3>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-solid fa-user-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Identificacion</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@item.IdUsuario</td>
+                                <td class="text-center">@item.Identificacion</td>
+                                <td class="text-center">@item.Nombre</td>
+                                <td class="text-center">@item.Email</td>
+                                @if (item.Estado == true)
+                                {
+                                    <td class="text-center">Activo</td>
+                                }
+                                else
+                                {
+                                    <td class="text-center">Inactivo</td>
+                                }
+                                
+                                <td class="text-center">@item.IdRol</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="1"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("CambiarEstado","Usuario", new { q = item.IdUsuario })" class="btn btn-danger btnEliminacion"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Identificacion</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

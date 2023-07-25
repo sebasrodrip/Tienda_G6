@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="f7c38006a8804f15b135f1c0f0a2707d" Name="Diagram1" ZoomLevel="61">
+        <EntityTypeShape EntityType="Tienda_G6Model.Articulo" Width="1.5" PointX="10.5" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Bitacora" Width="1.5" PointX="5.25" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Categoria" Width="1.5" PointX="8.25" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Cliente" Width="1.5" PointX="8.25" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Credito" Width="1.5" PointX="6" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Factura" Width="1.5" PointX="10.5" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Rol" Width="1.5" PointX="0.75" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Usuario" Width="1.5" PointX="3" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Tienda_G6Model.Venta" Width="1.5" PointX="12.75" PointY="5" IsExpanded="true" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Articulo__IdCate__398D8EEE" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Venta__IdArticul__4BAC3F29" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Bitacora__IdUsua__4E88ABD4" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Cliente__IdCredi__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Cliente__IdUsuar__440B1D61" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Factura__IdClien__47DBAE45" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Venta__IdFactura__4AB81AF0" ManuallyRouted="false" />
+        <AssociationConnector Association="Tienda_G6Model.FK__Usuario__IdRol__3E52440B" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
