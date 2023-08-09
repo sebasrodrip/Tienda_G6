@@ -1,4 +1,5 @@
 ﻿using KN_WEB.Entities;
+using KN_WEB.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,8 @@ namespace KN_WEB.Controllers
 {
     public class HomeController : Controller
     {
+        UsuarioModel model = new UsuarioModel();
+
         [HttpGet]
         public ActionResult Index()
         {
@@ -17,6 +20,19 @@ namespace KN_WEB.Controllers
 
         [HttpGet]
         public ActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult SobreNosotros() {
+            return View();
+
+        }
+
+
+        [HttpGet]
+        public ActionResult Recuperar() 
         {
             return View();
         }
@@ -39,6 +55,27 @@ namespace KN_WEB.Controllers
         {
             //PROGRAMACION
             return RedirectToAction("Login", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult RecuperarContrasenna(UsuarioEnt entidad)
+        {
+            try
+            {
+                var resp = model.RecuperarContrasenna(entidad);
+
+                if (resp)
+                    return RedirectToAction("Login", "Home");
+                else
+                {
+                    ViewBag.MsjPantalla = "No se ha podido recuperar su infomración";
+                    return View("Recuperar");
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
         }
 
     }

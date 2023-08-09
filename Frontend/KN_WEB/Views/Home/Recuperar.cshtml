@@ -1,0 +1,40 @@
+﻿@model KN_WEB.Entities.UsuarioEnt
+
+@{
+    ViewBag.Title = "Recuperar";
+    Layout = "~/Views/Shared/_Layout - Login.cshtml";
+}
+
+@using (Html.BeginForm("RecuperarContrasenna", "Home", FormMethod.Post))
+    {
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="card bg-dark shadow-lg border-1 rounded-lg mt-5">
+                    <div class="card-header"><h3 class="text-center text-light font-weight-light my-4">Recuperar Contraseña</h3></div>
+
+                    @if (ViewBag.MsjPantalla != null)
+                    {
+                        <div style="text-align:center" class="alert alert-warning" role="alert">
+                            @ViewBag.MsjPantalla
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <div class="form-floating mb-3">
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @placeholder = "Correo Electrónico" })
+                            <label for="inputEmail">Correo Electrónico</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <button class="btn btn-primary bg-info border-0" type="submit">Enviar</button>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center py-3">
+                        <div class="small">
+                            <button class="btn btn-primary bg-info border-0" href="@Url.Action("Login", "Home")">Volver <i class="fa-solid fa-reply"/></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
