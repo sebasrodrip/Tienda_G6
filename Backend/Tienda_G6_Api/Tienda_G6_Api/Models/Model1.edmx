@@ -78,9 +78,9 @@
           </Key>
           <Property Name="IdUsuario" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Identificacion" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="Nombre" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="Email" Type="varchar" MaxLength="20" Nullable="false" />
-          <Property Name="Contrasenna" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Contrasenna" Type="varchar(max)" Nullable="false" />
           <Property Name="Estado" Type="bit" Nullable="false" />
           <Property Name="IdRol" Type="int" Nullable="false" />
           <Property Name="ClaveTemporal" Type="bit" />
@@ -197,6 +197,14 @@
           <Parameter Name="Origen" Type="varchar" Mode="In" />
           <Parameter Name="IdUsuario" Type="bigint" Mode="In" />
           <Parameter Name="DireccionIP" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="RegistrarUsuario" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Email" Type="varchar" Mode="In" />
+          <Parameter Name="Contrasenna" Type="varchar" Mode="In" />
+          <Parameter Name="Identificacion" Type="varchar" Mode="In" />
+          <Parameter Name="Nombre" Type="varchar" Mode="In" />
+          <Parameter Name="Estado" Type="bit" Mode="In" />
+          <Parameter Name="IdRol" Type="int" Mode="In" />
         </Function>
         <EntityContainer Name="Tienda_G6ModelStoreContainer">
           <EntitySet Name="Articulo" EntityType="Self.Articulo" Schema="dbo" store:Type="Tables" />
@@ -329,9 +337,9 @@
           </Key>
           <Property Name="IdUsuario" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Identificacion" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Nombre" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Email" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Contrasenna" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Contrasenna" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Estado" Type="Boolean" Nullable="false" />
           <Property Name="IdRol" Type="Int32" Nullable="false" />
           <Property Name="ClaveTemporal" Type="Boolean" />
@@ -496,6 +504,14 @@
             <Parameter Name="IdUsuario" Mode="In" Type="Int64" />
             <Parameter Name="DireccionIP" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="RegistrarUsuario">
+            <Parameter Name="Email" Mode="In" Type="String" />
+            <Parameter Name="Contrasenna" Mode="In" Type="String" />
+            <Parameter Name="Identificacion" Mode="In" Type="String" />
+            <Parameter Name="Nombre" Mode="In" Type="String" />
+            <Parameter Name="Estado" Mode="In" Type="Boolean" />
+            <Parameter Name="IdRol" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
@@ -604,6 +620,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="RegistrarBitacora" FunctionName="Tienda_G6Model.Store.RegistrarBitacora" />
+          <FunctionImportMapping FunctionImportName="RegistrarUsuario" FunctionName="Tienda_G6Model.Store.RegistrarUsuario" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

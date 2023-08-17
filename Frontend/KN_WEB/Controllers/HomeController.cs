@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
+
 namespace KN_WEB.Controllers
 {
     public class HomeController : Controller
@@ -24,12 +25,19 @@ namespace KN_WEB.Controllers
 
         }
 
-
         [HttpGet]
         public ActionResult Recuperar() 
         {
             return View();
         }
+
+        [HttpGet]
+        public ActionResult Admin()
+        {
+            return View();
+        }
+
+
 
         [HttpPost]
         public ActionResult IniciarSesion(UsuarioEnt entidad)
@@ -49,14 +57,7 @@ namespace KN_WEB.Controllers
                     Session["IdRolUsuario"] = resp.IdRol;
                     Session["TokenUsuario"] = resp.Token;
 
-                    if (resp.IdRol != 1)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        return RedirectToAction("Admin", "Index");
-                    }
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
@@ -86,8 +87,8 @@ namespace KN_WEB.Controllers
         public ActionResult RegistrarUsuario(UsuarioEnt entidad)
         {
 
-            try
-            {
+           try
+           {
                 entidad.Contrasenna = model.Encrypt(entidad.Contrasenna);
                 entidad.IdRol = 2;
                 entidad.Estado = true;

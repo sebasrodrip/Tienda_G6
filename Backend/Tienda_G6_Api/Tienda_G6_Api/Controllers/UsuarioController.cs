@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web.Http;
+using Tienda_G6_Api.App_Start;
 using Tienda_G6_Api.Entities;
 using Tienda_G6_Api.Models;
 
@@ -12,13 +13,13 @@ namespace Tienda_G6_Api.Controllers
     {
 
         UtilitariosModel util = new UtilitariosModel();
+        TokenGenerator tokGenerator = new TokenGenerator();
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("api/IniciarSesion")]
-        public IHttpActionResult IniciarSesion(UsuarioEnt entidad)
+        public UsuarioEnt IniciarSesion(UsuarioEnt entidad)
         {
-            try
-            {
                 using (var bd = new Tienda_G6Entities1())
                 {
                     var datos = (from x in bd.Usuario
@@ -43,7 +44,7 @@ namespace Tienda_G6_Api.Controllers
                     {
                         if (datos.ClaveTemporal.Value && datos.Caducidad < DateTime.Now)
                         {
-                            return BadRequest("La clave temporal ha caducado.");
+                            return null;
                         }
 
                         UsuarioEnt res = new UsuarioEnt();
@@ -54,73 +55,81 @@ namespace Tienda_G6_Api.Controllers
                         res.IdRol = datos.IdRol;
                         res.IdUsuario = datos.IdUsuario;
                         res.NombreRol = datos.NombreRol;
-                        return Ok(res);
+                        res.Token = tokGenerator.GenerateTokenJwt(datos.IdUsuario);
+                        return res;
                     }
-
-                    return BadRequest("Credenciales inválidas o usuario no encontrado");
+                    return null;
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al iniciar sesión: " + ex.Message);
-                return InternalServerError();
-            }
+
         }
 
         [HttpPost]
+        [AllowAnonymous]
         [Route("api/RegistrarUsuario")]
-        public IHttpActionResult RegistrarUsuario(UsuarioEnt usuario)
+        public int RegistrarUsuario(UsuarioEnt entidad)
         {
-            try
+            using (var bd = new Tienda_G6Entities1())
             {
-                if (usuario == null)
-                {
-                    return BadRequest("El objeto usuario no puede ser nulo.");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                using (var bd = new Tienda_G6Entities1())
-                {
-                    // Verificar si la Identificación ya existe en la base de datos
-                    if (bd.Usuario.Any(u => u.Identificacion == usuario.Identificacion))
-                    {
-                        ModelState.AddModelError("Identificacion", "La Identificación ya existe en la base de datos.");
-                        return BadRequest(ModelState);
-                    }
-
-                    // Verificar si el Email ya existe en la base de datos
-                    if (bd.Usuario.Any(u => u.Email == usuario.Email))
-                    {
-                        ModelState.AddModelError("Email", "El Email ya existe en la base de datos.");
-                        return BadRequest(ModelState);
-                    }
-
-                    var nuevoUsuario = new Usuario
-                    {
-                        Identificacion = usuario.Identificacion,
-                        Nombre = usuario.Nombre,
-                        Email = usuario.Email,
-                        Estado = true, // Valor predeterminado para Estado
-                        Contrasenna = usuario.Contrasenna,
-                        IdRol = 2 // Valor predeterminado para IdRol
-                    };
-
-                    bd.Usuario.Add(nuevoUsuario);
-                    bd.SaveChanges();
-
-                    return Ok("Usuario agregado exitosamente.");
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al agregar usuario: " + ex.Message);
-                return InternalServerError();
+                return bd.RegistrarUsuario(entidad.Email,
+                                    entidad.Contrasenna,
+                                    entidad.Identificacion,
+                                    entidad.Nombre,
+                                    entidad.Estado,
+                                    entidad.IdRol);
             }
         }
+        //public IHttpActionResult RegistrarUsuario(UsuarioEnt usuario)
+        //{
+        //    try
+        //    {
+        //        if (usuario == null)
+        //        {
+        //            return BadRequest("El objeto usuario no puede ser nulo.");
+        //        }
+
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return BadRequest(ModelState);
+        //        }
+
+        //        using (var bd = new Tienda_G6Entities1())
+        //        {
+        //            // Verificar si la Identificación ya existe en la base de datos
+        //            if (bd.Usuario.Any(u => u.Identificacion == usuario.Identificacion))
+        //            {
+        //                ModelState.AddModelError("Identificacion", "La Identificación ya existe en la base de datos.");
+        //                return BadRequest(ModelState);
+        //            }
+
+        //            // Verificar si el Email ya existe en la base de datos
+        //            if (bd.Usuario.Any(u => u.Email == usuario.Email))
+        //            {
+        //                ModelState.AddModelError("Email", "El Email ya existe en la base de datos.");
+        //                return BadRequest(ModelState);
+        //            }
+
+        //            var nuevoUsuario = new Usuario
+        //            {
+        //                Identificacion = usuario.Identificacion,
+        //                Nombre = usuario.Nombre,
+        //                Email = usuario.Email,
+        //                Estado = true, // Valor predeterminado para Estado
+        //                Contrasenna = usuario.Contrasenna,
+        //                IdRol = 2 // Valor predeterminado para IdRol
+        //            };
+
+        //            bd.Usuario.Add(nuevoUsuario);
+        //            bd.SaveChanges();
+
+        //            return Ok("Usuario agregado exitosamente.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Error al agregar usuario: " + ex.Message);
+        //        return InternalServerError();
+        //    }
+        //}
 
         [HttpPost]
         [Route("api/RecuperarContrasenna")]

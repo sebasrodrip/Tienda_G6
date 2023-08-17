@@ -47,9 +47,9 @@ VALUES ('CLIENTE');
 CREATE TABLE Usuario (
     IdUsuario bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
     Identificacion varchar(20) NOT NULL,
-    Nombre varchar(20) NOT NULL,
-    Email varchar(20) NOT NULL,
-    Contrasenna varchar(20) NOT NULL,
+    Nombre varchar(100) NOT NULL,
+    Email varchar(50) NOT NULL,
+    Contrasenna varchar(MAX) NOT NULL,
     Estado bit NOT NULL,
     IdRol int NOT NULL,
 	ClaveTemporal bit NULL,
@@ -64,10 +64,6 @@ ADD CONSTRAINT UQ_Identificacion_Usuario UNIQUE (Identificacion);
 
 ALTER TABLE Usuario
 ADD CONSTRAINT UQ_Email_Usuario UNIQUE (Email);
-
-INSERT INTO Usuario (Identificacion, Nombre, Email, Contrasenna, Estado, IdRol)
-VALUES ('identificacion1', 'usuario', 'email1@example.com', '123456', 1, 1);
-
 
 -- Crear tabla Credito
 CREATE TABLE Credito (
@@ -133,7 +129,7 @@ CREATE TABLE Bitacora (
 );
 
 -- Procedimientos Almacenados
-CREATE PROCEDURE [dbo].[RegistrarBitacora] 
+CREATE OR ALTER PROCEDURE [dbo].[RegistrarBitacora] 
 	@MensajeError	VARCHAR(5000), 
 	@Origen			VARCHAR(5000), 
 	@IdUsuario		BIGINT, 
@@ -143,6 +139,22 @@ BEGIN
 
 	INSERT INTO dbo.Bitacora(FechaHora,MensajeError,Origen,IdUsuario,DireccionIP)
     VALUES (GETDATE(),@MensajeError, @Origen, @IdUsuario, @DireccionIP)
+
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[RegistrarUsuario] 
+	@Email VARCHAR(50),
+    @Contrasenna VARCHAR(25),
+    @Identificacion VARCHAR(20),
+    @Nombre VARCHAR(100),
+    @Estado BIT,
+    @IdRol INT
+AS
+BEGIN
+	
+	INSERT INTO dbo.Usuario(Email,Contrasenna,Identificacion,Nombre,Estado,IdRol,ClaveTemporal,Caducidad)
+    VALUES (@Email,@Contrasenna,@Identificacion,@Nombre,@Estado,@IdRol,0,GETDATE())
 
 END
 GO

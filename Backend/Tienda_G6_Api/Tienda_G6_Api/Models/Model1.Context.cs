@@ -57,5 +57,34 @@ namespace Tienda_G6_Api.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RegistrarBitacora", mensajeErrorParameter, origenParameter, idUsuarioParameter, direccionIPParameter);
         }
+    
+        public virtual int RegistrarUsuario(string email, string contrasenna, string identificacion, string nombre, Nullable<bool> estado, Nullable<int> idRol)
+        {
+            var emailParameter = email != null ?
+                new ObjectParameter("Email", email) :
+                new ObjectParameter("Email", typeof(string));
+    
+            var contrasennaParameter = contrasenna != null ?
+                new ObjectParameter("Contrasenna", contrasenna) :
+                new ObjectParameter("Contrasenna", typeof(string));
+    
+            var identificacionParameter = identificacion != null ?
+                new ObjectParameter("Identificacion", identificacion) :
+                new ObjectParameter("Identificacion", typeof(string));
+    
+            var nombreParameter = nombre != null ?
+                new ObjectParameter("Nombre", nombre) :
+                new ObjectParameter("Nombre", typeof(string));
+    
+            var estadoParameter = estado.HasValue ?
+                new ObjectParameter("Estado", estado) :
+                new ObjectParameter("Estado", typeof(bool));
+    
+            var idRolParameter = idRol.HasValue ?
+                new ObjectParameter("IdRol", idRol) :
+                new ObjectParameter("IdRol", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("RegistrarUsuario", emailParameter, contrasennaParameter, identificacionParameter, nombreParameter, estadoParameter, idRolParameter);
+        }
     }
 }
