@@ -13,12 +13,6 @@ namespace KN_WEB.Controllers
         UsuarioModel model = new UsuarioModel();
 
         [HttpGet]
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        [HttpGet]
         public ActionResult Login()
         {
             return View();
@@ -41,7 +35,45 @@ namespace KN_WEB.Controllers
         public ActionResult IniciarSesion(UsuarioEnt entidad)
         {
             //PROGRAMACION
-            return RedirectToAction("Index","Home");
+            try
+            {
+                entidad.Contrasenna = model.Encrypt(entidad.Contrasenna);
+                var resp = model.IniciarSesion(entidad);
+
+                if (resp != null)
+                {
+                    Session["IdUsuario"] = resp.IdUsuario.ToString();
+                    Session["CorreoUsuario"] = resp.Email;
+                    Session["NombreUsuario"] = resp.Nombre;
+                    Session["RolUsuario"] = resp.NombreRol;
+                    Session["IdRolUsuario"] = resp.IdRol;
+                    Session["TokenUsuario"] = resp.Token;
+
+                    if (resp.IdRol != 1)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Admin", "Index");
+                    }
+                }
+                else
+                {
+                    ViewBag.MsjPantalla = "No se ha podido validar su información";
+                    return View("Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult Index()
+        {
+            return View();
         }
 
         [HttpGet]
@@ -53,8 +85,27 @@ namespace KN_WEB.Controllers
         [HttpPost]
         public ActionResult RegistrarUsuario(UsuarioEnt entidad)
         {
-            //PROGRAMACION
-            return RedirectToAction("Login", "Home");
+
+            try
+            {
+                entidad.Contrasenna = model.Encrypt(entidad.Contrasenna);
+                entidad.IdRol = 2;
+                entidad.Estado = true;
+
+                var resp = model.RegistrarUsuario(entidad);
+
+                if (resp > 0)
+                    return RedirectToAction("Login", "Home");
+                else
+                {
+                    ViewBag.MsjPantalla = "No se ha podido registrar su información";
+                    return View("Registro");
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("Error");
+            }
         }
 
         [HttpPost]

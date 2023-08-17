@@ -7489,7 +7489,7 @@
     <Content Include="Views\Usuario\Index.cshtml" />
     <Content Include="Views\Articulo\Index.cshtml" />
     <Content Include="Views\Categoria\Index.cshtml" />
-    <Content Include="Views\Cliente\Index.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Factura\Index.cshtml" />
     <Content Include="Views\Home\SobreNosotros.cshtml" />
     <Content Include="Views\Home\Recuperar.cshtml" />

@@ -96,7 +96,7 @@
           <Property Name="Precio" Type="float" Nullable="false" />
           <Property Name="Cantidad" Type="int" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Articulo__IdCate__398D8EEE">
+        <Association Name="FK__Articulo__IdCate__4BAC3F29">
           <End Role="Categoria" Type="Self.Categoria" Multiplicity="1" />
           <End Role="Articulo" Type="Self.Articulo" Multiplicity="*" />
           <ReferentialConstraint>
@@ -108,7 +108,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Bitacora__IdUsua__5070F446">
+        <Association Name="FK__Bitacora__IdUsua__628FA481">
           <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
           <End Role="Bitacora" Type="Self.Bitacora" Multiplicity="*" />
           <ReferentialConstraint>
@@ -120,7 +120,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Cliente__IdCredi__46E78A0C">
+        <Association Name="FK__Cliente__IdCredi__59063A47">
           <End Role="Credito" Type="Self.Credito" Multiplicity="1" />
           <End Role="Cliente" Type="Self.Cliente" Multiplicity="*" />
           <ReferentialConstraint>
@@ -132,7 +132,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Cliente__IdUsuar__45F365D3">
+        <Association Name="FK__Cliente__IdUsuar__5812160E">
           <End Role="Usuario" Type="Self.Usuario" Multiplicity="1" />
           <End Role="Cliente" Type="Self.Cliente" Multiplicity="*" />
           <ReferentialConstraint>
@@ -144,7 +144,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Factura__IdClien__49C3F6B7">
+        <Association Name="FK__Factura__IdClien__5BE2A6F2">
           <End Role="Cliente" Type="Self.Cliente" Multiplicity="1" />
           <End Role="Factura" Type="Self.Factura" Multiplicity="*" />
           <ReferentialConstraint>
@@ -156,7 +156,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Usuario__IdRol__3E52440B">
+        <Association Name="FK__Usuario__IdRol__5070F446">
           <End Role="Rol" Type="Self.Rol" Multiplicity="1" />
           <End Role="Usuario" Type="Self.Usuario" Multiplicity="*" />
           <ReferentialConstraint>
@@ -168,7 +168,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Venta__IdArticul__4D94879B">
+        <Association Name="FK__Venta__IdArticul__5FB337D6">
           <End Role="Articulo" Type="Self.Articulo" Multiplicity="1" />
           <End Role="Venta" Type="Self.Venta" Multiplicity="*" />
           <ReferentialConstraint>
@@ -180,7 +180,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Venta__IdFactura__4CA06362">
+        <Association Name="FK__Venta__IdFactura__5EBF139D">
           <End Role="Factura" Type="Self.Factura" Multiplicity="1" />
           <End Role="Venta" Type="Self.Venta" Multiplicity="*" />
           <ReferentialConstraint>
@@ -192,6 +192,12 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Function Name="RegistrarBitacora" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MensajeError" Type="varchar" Mode="In" />
+          <Parameter Name="Origen" Type="varchar" Mode="In" />
+          <Parameter Name="IdUsuario" Type="bigint" Mode="In" />
+          <Parameter Name="DireccionIP" Type="varchar" Mode="In" />
+        </Function>
         <EntityContainer Name="Tienda_G6ModelStoreContainer">
           <EntitySet Name="Articulo" EntityType="Self.Articulo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bitacora" EntityType="Self.Bitacora" Schema="dbo" store:Type="Tables" />
@@ -202,35 +208,35 @@
           <EntitySet Name="Rol" EntityType="Self.Rol" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuario" EntityType="Self.Usuario" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Venta" EntityType="Self.Venta" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Articulo__IdCate__398D8EEE" Association="Self.FK__Articulo__IdCate__398D8EEE">
+          <AssociationSet Name="FK__Articulo__IdCate__4BAC3F29" Association="Self.FK__Articulo__IdCate__4BAC3F29">
             <End Role="Categoria" EntitySet="Categoria" />
             <End Role="Articulo" EntitySet="Articulo" />
           </AssociationSet>
-          <AssociationSet Name="FK__Bitacora__IdUsua__5070F446" Association="Self.FK__Bitacora__IdUsua__5070F446">
+          <AssociationSet Name="FK__Bitacora__IdUsua__628FA481" Association="Self.FK__Bitacora__IdUsua__628FA481">
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="Bitacora" EntitySet="Bitacora" />
           </AssociationSet>
-          <AssociationSet Name="FK__Cliente__IdCredi__46E78A0C" Association="Self.FK__Cliente__IdCredi__46E78A0C">
+          <AssociationSet Name="FK__Cliente__IdCredi__59063A47" Association="Self.FK__Cliente__IdCredi__59063A47">
             <End Role="Credito" EntitySet="Credito" />
             <End Role="Cliente" EntitySet="Cliente" />
           </AssociationSet>
-          <AssociationSet Name="FK__Cliente__IdUsuar__45F365D3" Association="Self.FK__Cliente__IdUsuar__45F365D3">
+          <AssociationSet Name="FK__Cliente__IdUsuar__5812160E" Association="Self.FK__Cliente__IdUsuar__5812160E">
             <End Role="Usuario" EntitySet="Usuario" />
             <End Role="Cliente" EntitySet="Cliente" />
           </AssociationSet>
-          <AssociationSet Name="FK__Factura__IdClien__49C3F6B7" Association="Self.FK__Factura__IdClien__49C3F6B7">
+          <AssociationSet Name="FK__Factura__IdClien__5BE2A6F2" Association="Self.FK__Factura__IdClien__5BE2A6F2">
             <End Role="Cliente" EntitySet="Cliente" />
             <End Role="Factura" EntitySet="Factura" />
           </AssociationSet>
-          <AssociationSet Name="FK__Usuario__IdRol__3E52440B" Association="Self.FK__Usuario__IdRol__3E52440B">
+          <AssociationSet Name="FK__Usuario__IdRol__5070F446" Association="Self.FK__Usuario__IdRol__5070F446">
             <End Role="Rol" EntitySet="Rol" />
             <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
-          <AssociationSet Name="FK__Venta__IdArticul__4D94879B" Association="Self.FK__Venta__IdArticul__4D94879B">
+          <AssociationSet Name="FK__Venta__IdArticul__5FB337D6" Association="Self.FK__Venta__IdArticul__5FB337D6">
             <End Role="Articulo" EntitySet="Articulo" />
             <End Role="Venta" EntitySet="Venta" />
           </AssociationSet>
-          <AssociationSet Name="FK__Venta__IdFactura__4CA06362" Association="Self.FK__Venta__IdFactura__4CA06362">
+          <AssociationSet Name="FK__Venta__IdFactura__5EBF139D" Association="Self.FK__Venta__IdFactura__5EBF139D">
             <End Role="Factura" EntitySet="Factura" />
             <End Role="Venta" EntitySet="Venta" />
           </AssociationSet>
@@ -484,6 +490,12 @@
             <End Role="Rol" EntitySet="Rol" />
             <End Role="Usuario" EntitySet="Usuario" />
           </AssociationSet>
+          <FunctionImport Name="RegistrarBitacora">
+            <Parameter Name="MensajeError" Mode="In" Type="String" />
+            <Parameter Name="Origen" Mode="In" Type="String" />
+            <Parameter Name="IdUsuario" Mode="In" Type="Int64" />
+            <Parameter Name="DireccionIP" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
@@ -591,6 +603,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="RegistrarBitacora" FunctionName="Tienda_G6Model.Store.RegistrarBitacora" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

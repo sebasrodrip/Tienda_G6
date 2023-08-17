@@ -39,5 +39,7 @@ namespace KN_WEB.Entities
         public string NombreRol { get; set; }
 
         public string ContrasennaNueva { get; set; }
+
+        public string Token { get; set; }
     }
 }

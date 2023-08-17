@@ -19,7 +19,7 @@ namespace KN_WEB.Models
             using (var client = new HttpClient())
             {
                 string url = ConfigurationManager.AppSettings["urlApi"].ToString() + "api/IniciarSesion";
-                JsonContent body = JsonContent.Create(entidad);
+                JsonContent body = JsonContent.Create(entidad); //Serialiar
                 HttpResponseMessage resp = client.PostAsync(url, body).Result;
 
                 if (resp.IsSuccessStatusCode)
@@ -121,7 +121,7 @@ namespace KN_WEB.Models
             byte[] toEncryptArray = UTF8Encoding.UTF8.GetBytes(toEncrypt);
 
             System.Configuration.AppSettingsReader settingsReader = new AppSettingsReader();
-            string key = ConfigurationManager.AppSettings["secretKey"].ToString();
+            string key = ConfigurationManager.AppSettings["secretKey"].ToString(); 
             MD5CryptoServiceProvider hashmd5 = new MD5CryptoServiceProvider();
             keyArray = hashmd5.ComputeHash(UTF8Encoding.UTF8.GetBytes(key));
             hashmd5.Clear();
@@ -138,5 +138,22 @@ namespace KN_WEB.Models
             return Convert.ToBase64String(resultArray, 0, resultArray.Length);
         }
 
+
+        public bool RecuperarContrasenna(UsuarioEnt entidad)
+        {
+            using (var client = new HttpClient())
+            {
+                string url = ConfigurationManager.AppSettings["urlApi"].ToString() + "api/RecuperarContrasenna";
+                JsonContent body = JsonContent.Create(entidad); //Serializar
+                HttpResponseMessage resp = client.PostAsync(url, body).Result;
+
+                if (resp.IsSuccessStatusCode)
+                {
+                    return resp.Content.ReadFromJsonAsync<bool>().Result;
+                }
+
+                return false;
+            }
+        }
     }
 }
