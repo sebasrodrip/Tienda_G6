@@ -9,6 +9,7 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
+    [Authorize]
     public class UsuarioController : ApiController
     {
 

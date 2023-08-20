@@ -397,15 +397,13 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# Ignorar la carpeta Models y sus configuraciones dentro de Tienda_G6_Api
+# Ignorar la carpeta Models dentro de Tienda_G6_Api
 Backend/Tienda_G6_Api/Models/**
-Backend\Tienda_G6_Api\Web.config
-Backend\Tienda_G6_Api\Tienda_G6_Api.csproj
 
 #Ignorar las carpetas packages
-Frontend/packages
-Backend/packages
+Frontend/packages/**
+Backend/packages/**
 
 #Ignorar las carpetas .vs
-Frontend/.vs
-Backend/.vs
+Frontend/.vs/**
+Backend/.vs/**
