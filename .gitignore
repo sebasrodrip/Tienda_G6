@@ -396,3 +396,6 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Ignorar la carpeta Models dentro de Tienda_G6_Api
+Backend/Tienda_G6_Api/Models/**
