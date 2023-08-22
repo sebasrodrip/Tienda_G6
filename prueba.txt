@@ -1,0 +1,194 @@
+
+Respuesta de error:
+Success: False
+Mensaje: Error al agregar categoría.
+
+Respuesta de error:
+Success: False
+Mensaje: Error al agregar categoría.
+
+Respuesta exitosa:
+Success: False
+Mensaje: Categoría agregada exitosamente.
+
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Error al agregar categoría.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '0' no encontrada en la base de datos.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría actualizada con éxito.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Error en la solicitud: Categoría con ID '55' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '55' no encontrada en la base de datos.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría actualizada con éxito.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría eliminada con éxito.
+Error en la solicitud: Error al agregar categoría.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría agregada exitosamente.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Error en la solicitud: Categoría con ID '60' no encontrada en la base de datos.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+Error en la solicitud: Categoría con ID '49' no encontrada en la base de datos.
+Error en la solicitud: Categoría con ID '48' no encontrada en la base de datos.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría eliminada con éxito.
+
+--------------Usuarios--------------------------------------
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: El correo ya existe en la base de datos.
+Operación exitosa: Usuario agregado exitosamente.
+Operación exitosa: Usuario eliminado con éxito.
+Operación exitosa: Usuario actualizado con éxito.
+Operación exitosa: Usuario actualizado con éxito.
+Operación exitosa: Usuario actualizado con éxito.
+Operación exitosa: Usuario actualizado con éxito.
+Operación exitosa: Usuario actualizado con éxito.
+Error en la solicitud: El correo ya existe en la base de datos.

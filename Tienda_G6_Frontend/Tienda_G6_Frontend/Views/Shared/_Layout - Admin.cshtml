@@ -1,0 +1,358 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title - Panel Administrador</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="~/AdminStyles/plugins/fontawesome-free/css/all.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/AdminStyles/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="~/AdminStyles/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminStyles/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="~/AdminStyles/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/AdminStyles/dist/css/adminlte.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="~/AdminStyles/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <!-- Toastr -->
+    <link rel="stylesheet" href="~/AdminStyles/plugins/toastr/toastr.min.css">
+    @RenderSection("styles", required: false)
+</head>
+<body class="hold-transition dark-mode sidebar-collapse layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <script>
+        document.body.classList.add('sidebar-mini');
+    </script>
+
+    <div class="wrapper">
+
+        <!-- Preloader
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="~/AdminStyles/dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+        </div>
+            -->
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-dark">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+            </ul>
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Navbar Search -->
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                        <i class="fas fa-th-large"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="logout" class="nav-link">
+                        <i class="nav-icon fas fa-sign-out-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="@Url.Action("Index", "Home")" class="brand-link">
+                <img src="~/AdminStyles/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light"></span>
+            </a>
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <img src="~/AdminStyles/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block">Nombre del usuario</a>
+                    </div>
+                </div>
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="index" class="nav-link">
+                                <i class="nav-icon fas fa-chart-bar"></i>
+                                <p>
+                                    Reportes
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Usuario")" class="nav-link">
+                                <i class="nav-icon fas fa-users-cog"></i>
+                                <p>
+                                    Usuarios
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-solid fa-check-double"></i>
+                                <p>
+                                    Roles
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>
+                                    Clientes
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-tags"></i>
+                                <p>
+                                    Articulos
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="@Url.Action("Index", "Categoria")" class="nav-link">
+                                <i class="nav-icon fas fa-plus"></i>
+                                <p>
+                                    Categorias
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <p>
+                                    Ventas
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice"></i>
+                                <p>
+                                    Facturas
+                                </p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        @RenderSection("header", required: false)
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    @RenderBody()
+                </div>
+            </section>
+        </div>
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            Todos los derechos reservados
+            <div class="float-right d-none d-sm-inline-block">
+                <strong>Copyright &copy; 2023 <a href="https://adminlte.io">Proyecto de Programacion Avanzada</a>.</strong>
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+    </div>
+    <!-- ./wrapper -->
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    <script src="~/AdminStyles/plugins/jquery/jquery.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="~/AdminStyles/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="~/AdminStyles/plugins/toastr/toastr.min.js"></script>
+    <!-- Bootstrap -->
+    <script src="~/AdminStyles/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="~/AdminStyles/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/AdminStyles/dist/js/adminlte.js"></script>
+    <!-- PAGE PLUGINS -->
+    <!-- jQuery Mapael -->
+    <script src="~/AdminStyles/plugins/jquery-mousewheel/jquery.mousewheel.js"></script>
+    <script src="~/AdminStyles/plugins/raphael/raphael.min.js"></script>
+    <script src="~/AdminStyles/plugins/jquery-mapael/jquery.mapael.min.js"></script>
+    <script src="~/AdminStyles/plugins/jquery-mapael/maps/usa_states.min.js"></script>
+    <!-- DataTables  & Plugins -->
+    <script src="~/AdminStyles/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/AdminStyles/plugins/jszip/jszip.min.js"></script>
+    <script src="~/AdminStyles/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/AdminStyles/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/AdminStyles/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- ChartJS -->
+    <script src="~/AdminStyles/plugins/chart.js/Chart.min.js"></script>
+
+    <!-- AdminLTE for demo purposes -->
+    <script src="~/AdminStyles/dist/js/demo.js"></script>
+
+    <!-- AdminLTE dashboard demo (This is only for demo purposes)
+    <script src="~/AdminStyles/dist/js/pages/dashboard2.js"></script>
+        -->
+    @RenderSection("scripts", required: false)
+
+    <script>
+        $(function () {
+            var Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            $('.toastsDefaultSuccess').click(function () {
+                $(document).Toasts('create', {
+                    class: 'bg-success',
+                    title: 'Toast Title',
+                    subtitle: 'Subtitle',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+                })
+            });
+            $('.toastsDefaultInfo').click(function () {
+                $(document).Toasts('create', {
+                    class: 'bg-info',
+                    title: 'Toast Title',
+                    subtitle: 'Subtitle',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+                })
+            });
+            $('.toastsDefaultWarning').click(function () {
+                $(document).Toasts('create', {
+                    class: 'bg-warning',
+                    title: 'Toast Title',
+                    subtitle: 'Subtitle',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+                })
+            });
+            $('.toastsDefaultDanger').click(function () {
+                $(document).Toasts('create', {
+                    class: 'bg-danger',
+                    title: 'Toast Title',
+                    subtitle: 'Subtitle',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+                })
+            });
+            $('.toastsDefaultMaroon').click(function () {
+                $(document).Toasts('create', {
+                    class: 'bg-maroon',
+                    title: 'Toast Title',
+                    subtitle: 'Subtitle',
+                    body: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr.'
+                })
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#example1").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "buttons": [
+                    {
+                        extend: "copy",
+                        text: "Copiar",
+                        className: "btn btn-default btn-sm"
+                    },
+                    {
+                        extend: "csv",
+                        text: "Exportar CSV",
+                        className: "btn btn-default btn-sm"
+                    },
+                    {
+                        extend: "excel",
+                        text: "Exportar Excel",
+                        className: "btn btn-default btn-sm"
+                    },
+                    {
+                        extend: "pdf",
+                        text: "Exportar PDF",
+                        className: "btn btn-default btn-sm"
+                    },
+                    {
+                        extend: "print",
+                        text: "Imprimir",
+                        className: "btn btn-default btn-sm"
+                    },
+                    {
+                        extend: "colvis",
+                        text: "Visibilidad de columnas",
+                        className: "btn btn-default btn-sm"
+                    }
+                ],
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    },
+                    "buttons": {
+                        "copy": "Copiar",
+                        "colvis": "Visibilidad de columnas",
+                        "print": "Imprimir",
+                        "csv": "Exportar CSV",
+                        "excel": "Exportar Excel",
+                        "pdf": "Exportar PDF"
+                    }
+                }
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+        });
+    </script>
+</body>
+</html>

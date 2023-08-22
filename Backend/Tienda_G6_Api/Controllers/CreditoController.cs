@@ -9,6 +9,7 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
+
     public class CreditoController : ApiController
     {
         [HttpGet]
@@ -49,7 +50,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarCredito")]
-        public IHttpActionResult ConsultarCredito(int q)
+        public HttpResponseMessage ConsultarCredito(int q)
         {
             try
             {
@@ -61,37 +62,67 @@ namespace Tienda_G6_Api.Controllers
 
                     if (credito != null)
                     {
-                        return Ok(new CreditoEnt
+                        var successResponse = new
                         {
-                            IdCredito = credito.IdCredito,
-                            Limite = credito.Limite
-                        });
+                            mensaje = "Consulta de crédito exitosa.",
+                            data = new CreditoEnt
+                            {
+                                IdCredito = credito.IdCredito,
+                                Limite = credito.Limite
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Crédito con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Crédito con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar crédito: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarCredito")]
-        public IHttpActionResult AgregarCredito(CreditoEnt entidad)
+        public HttpResponseMessage AgregarCredito(CreditoEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto crédito no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto crédito no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto crédito.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
@@ -104,81 +135,124 @@ namespace Tienda_G6_Api.Controllers
                     bd.Credito.Add(credito);
                     bd.SaveChanges();
 
-                    return Ok("Crédito agregado exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Crédito agregado exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar crédito: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarCredito")]
-        public IHttpActionResult ActualizarCredito(CreditoEnt entidad)
+        public HttpResponseMessage ActualizarCredito(CreditoEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto crédito no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto crédito no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto crédito.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var credito = (from x in bd.Credito
-                                   where x.IdCredito == entidad.IdCredito
-                                   select x).FirstOrDefault();
+                    var credito = bd.Credito.FirstOrDefault(c => c.IdCredito == entidad.IdCredito);
 
                     if (credito != null)
                     {
                         credito.Limite = entidad.Limite;
                         bd.SaveChanges();
-                        return Ok("Crédito actualizado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Crédito actualizado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Crédito con ID '{entidad.IdCredito}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Crédito con ID '{entidad.IdCredito}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar crédito: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarCredito")]
-        public IHttpActionResult EliminarCredito(int q)
+        public HttpResponseMessage EliminarCredito(int q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var credito = (from x in bd.Credito
-                                   where x.IdCredito == q
-                                   select x).FirstOrDefault();
+                    var credito = bd.Credito.FirstOrDefault(c => c.IdCredito == q);
 
                     if (credito != null)
                     {
                         bd.Credito.Remove(credito);
                         bd.SaveChanges();
-                        return Ok("Crédito eliminado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Crédito eliminado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Crédito con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Crédito con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar crédito: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
     }

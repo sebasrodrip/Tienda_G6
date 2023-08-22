@@ -9,6 +9,7 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
+
     public class FacturaController : ApiController
     {
         [HttpGet]
@@ -52,7 +53,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarFactura")]
-        public IHttpActionResult ConsultarFactura(long q)
+        public HttpResponseMessage ConsultarFactura(long q)
         {
             try
             {
@@ -64,40 +65,70 @@ namespace Tienda_G6_Api.Controllers
 
                     if (factura != null)
                     {
-                        return Ok(new FacturaEnt
+                        var successResponse = new
                         {
-                            IdFactura = factura.IdFactura,
-                            IdCliente = factura.IdCliente,
-                            Fecha = factura.Fecha,
-                            Total = factura.Total,
-                            Estado = factura.Estado
-                        });
+                            mensaje = "Consulta de factura exitosa.",
+                            data = new FacturaEnt
+                            {
+                                IdFactura = factura.IdFactura,
+                                IdCliente = factura.IdCliente,
+                                Fecha = factura.Fecha,
+                                Total = factura.Total,
+                                Estado = factura.Estado
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Factura con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Factura con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar factura: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarFactura")]
-        public IHttpActionResult AgregarFactura(FacturaEnt entidad)
+        public HttpResponseMessage AgregarFactura(FacturaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto factura no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto factura no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto factura.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
@@ -113,37 +144,52 @@ namespace Tienda_G6_Api.Controllers
                     bd.Factura.Add(factura);
                     bd.SaveChanges();
 
-                    return Ok("Factura agregada exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Factura agregada exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar factura: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarFactura")]
-        public IHttpActionResult ActualizarFactura(FacturaEnt entidad)
+        public HttpResponseMessage ActualizarFactura(FacturaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto factura no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto factura no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto factura.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var factura = (from x in bd.Factura
-                                   where x.IdFactura == entidad.IdFactura
-                                   select x).FirstOrDefault();
+                    var factura = bd.Factura.FirstOrDefault(f => f.IdFactura == entidad.IdFactura);
 
                     if (factura != null)
                     {
@@ -152,45 +198,73 @@ namespace Tienda_G6_Api.Controllers
                         factura.Total = entidad.Total;
                         factura.Estado = entidad.Estado;
                         bd.SaveChanges();
-                        return Ok("Factura actualizada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Factura actualizada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Factura con ID '{entidad.IdFactura}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Factura con ID '{entidad.IdFactura}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar factura: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarFactura")]
-        public IHttpActionResult EliminarFactura(long q)
+        public HttpResponseMessage EliminarFactura(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var factura = (from x in bd.Factura
-                                   where x.IdFactura == q
-                                   select x).FirstOrDefault();
+                    var factura = bd.Factura.FirstOrDefault(f => f.IdFactura == q);
 
                     if (factura != null)
                     {
                         bd.Factura.Remove(factura);
                         bd.SaveChanges();
-                        return Ok("Factura eliminada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Factura eliminada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Factura con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Factura con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar factura: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
     }

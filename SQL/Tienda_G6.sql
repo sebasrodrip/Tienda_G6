@@ -13,6 +13,47 @@ CREATE TABLE Categoria (
     Estado bit NOT NULL
 );
 
+-- Insertar la categoría 'Medicamentos' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Medicamentos', 1);
+
+-- Insertar la categoría 'Vitaminas' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Vitaminas', 1);
+
+-- Insertar la categoría 'Suplementos' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Suplementos', 1);
+
+-- Insertar la categoría 'Productos para el dolor' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Productos para el dolor', 1);
+
+-- Insertar la categoría 'Cuidado de la piel' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Cuidado de la piel', 1);
+
+-- Insertar la categoría 'Cuidado capilar' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Cuidado capilar', 1);
+
+-- Insertar la categoría 'Higiene oral' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Higiene oral', 1);
+
+-- Insertar la categoría 'Productos para bebés' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Productos para bebés', 1);
+
+-- Insertar la categoría 'Productos para la digestión' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Productos para la digestión', 1);
+
+-- Insertar la categoría 'Cuidado de heridas' en SQL Server
+INSERT INTO Categoria (Descripcion, Estado)
+VALUES ('Cuidado de heridas', 1);
+
+
 -- Crear tabla Articulo
 CREATE TABLE Articulo (
     IdArticulo bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,

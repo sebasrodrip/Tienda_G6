@@ -1,0 +1,295 @@
+﻿@{
+    ViewBag.Title = "Categorias";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestión de Roles</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Roles</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <!--Script para cerrar el formulario y limpiarlo-->
+    <script>
+        function cerrarForm() {
+            $("#rolId").val(0);
+            document.getElementById("formularioRol").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+
+    <!--Script para enviar los datos de la tabla al formulario-->
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var rolId = $(this).data("id");
+                var row = $(this).closest("tr");
+
+                var nombreRol = row.find("td:eq(1)").text();
+
+                $("#txtNombreRol").val(nombreRol);
+
+                // Actualiza el valor del campo oculto "RolId"
+                $("#rolId").val(rolId);
+
+                // Configura la acción del formulario para la edición
+                $("#formularioRol").attr("action", "/Rol/Editar/" + rolId);
+
+                // Oculta el botón "Guardar" y muestra el botón "Modificar"
+                $("#btnSubmit").hide();
+                $("#btnModificar").show();
+
+                $("#formContainer").show();
+            });
+
+            $("#btnCerrarFormulario").click(function () {
+                document.getElementById("formularioRol").reset();
+                $("#formularioRol").attr("action", "/Rol/Index");
+
+                // Muestra el botón "Guardar" y oculta el botón "Modificar"
+                $("#btnSubmit").show();
+                $("#btnModificar").hide();
+
+                $("#formContainer").hide();
+            });
+        });
+    </script>
+
+    <!--Script para enviar el formulario de registro y actualizar, mostrar las alertas, respuestas del Backend y mostrar boton de recargar página-->
+    <script>
+        $(document).ready(function () {
+            $("#formularioRol").submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                var clickedButtonId = $(document.activeElement).attr("id");
+
+                var url = "";
+
+                if (clickedButtonId === "btnModificar") {
+                    url = "/Rol/Actualizar";
+                } else {
+                    url = "/Rol/Agregar";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.mensaje) {
+                            if (response.errores && response.errores.length > 0) {
+                                alert(response.errores.join('\n'));
+                            }
+                        } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Operación exitosa',
+                                text: response.Mensaje
+                            });
+                            $("#btnRecargar").show();
+                            if (response.Mensaje == "Operación exitosa: Rol agregado exitosamente." || response.Mensaje == "Operación exitosa: Rol actualizado con éxito.") {
+                                cerrarForm();
+                            };
+
+                            if (response.Errores && response.Errores.length > 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Error en la solicitud',
+                                    text: response.Errores.join('\n')
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en la solicitud AJAX'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <!--Script para eliminar un registro-->
+    <script>
+        $(document).ready(function () {
+            var rolIdEliminar = null;
+
+            $(".btnEliminar").click(function (e) {
+                e.preventDefault();
+
+                rolIdEliminar = $(this).data("id");
+                $("#rolIdEliminar").val(rolIdEliminar);
+                $("#confirmarEliminarModal").modal("show");
+            });
+
+            $("#btnConfirmarEliminar").click(function () {
+                if (rolIdEliminar !== null) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Rol/Eliminar/" + rolIdEliminar,
+                        data: $("#eliminarRolForm").serialize(),
+                        success: function (response) {
+                            if (response.mensaje) {
+                                if (response.errores && response.errores.length > 0) {
+                                    alert(response.errores.join('\n'));
+                                }
+                            } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Operación exitosa',
+                                    text: response.Mensaje
+                                });
+                                $("#btnRecargar").show();
+                                if (response.Mensaje == "Operación exitosa: Rol eliminado con éxito.") {
+                                    $("#confirmarEliminarModal").modal("hide");
+                                };
+
+                                if (response.Errores && response.Errores.length > 0) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Error en la solicitud',
+                                        text: response.Errores.join('\n')
+                                    });
+                                }
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud AJAX'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!--Script para recargar la página-->
+    <script>
+        $("#btnRecargar").click(function () {
+            location.reload();
+            $("#btnRecargar").hide();
+        });
+    </script>
+}
+
+<!--Modal para confirmar eliminacion-->
+<div class="modal fade" id="confirmarEliminarModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmar Eliminación</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este rol?</p>
+                <form id="eliminarRolForm">
+                    <input type="hidden" name="q" id="rolIdEliminar" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Rol</h3>
+            </div>
+            <form id="formularioRol">
+                <fieldset>
+                    <input type="hidden" id="rolId" name="IdRol" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="txtNombreRol">Nombre del Rol:</label>
+                                <input type="text" class="form-control" id="txtNombreRol" name="NombreRol" required>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2" id="btnModificar" style="display: none;">Modificar</button>
+                    <button type="submit" class="btn btn-primary mr-2" id="btnSubmit">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Roles</h3>
+                <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Nombre del Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rol in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@rol.IdRol</td>
+                                <td class="text-center">@rol.NombreRol</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="@rol.IdRol"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-danger btnEliminar" data-id="@rol.IdRol"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Nombre del Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

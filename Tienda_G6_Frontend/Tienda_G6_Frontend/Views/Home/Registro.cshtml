@@ -1,0 +1,58 @@
+﻿@model Tienda_G6_Frontend.Entities.UsuarioEnt
+
+@{
+    ViewBag.Title = "Registro";
+    Layout = "~/Views/Shared/_Layout - Login.cshtml";
+}
+
+
+@using (Html.BeginForm("RegistrarUsuario", "Home", FormMethod.Post))
+{
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card bg-dark shadow-lg border-0 rounded-lg mt-5">
+                <div class="card-header"><h3 class="text-center text-light font-weight-light my-4">Registro</h3></div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                @Html.TextBoxFor(m => m.Identificacion, new { @class = "form-control", @type = "text", @placeholder = "Identificación" })
+                                <label for="inputFirstName">Identificación</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", @type = "text", @placeholder = "Nombre" })
+                                <label for="inputLastName">Nombre</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @type = "email", @placeholder = "Correo Electrónico" })
+                        <label for="inputEmail">Correo Electrónico</label>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                @Html.TextBoxFor(m => m.Contrasenna, new { @class = "form-control", @type = "password", @placeholder = "Contraseña" })
+                                <label for="inputPassword">Contraseña</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3 mb-md-0">
+                                @Html.TextBoxFor(m => m.ConfirmarContrasenna, new { @class = "form-control", @type = "password", @placeholder = "Confirmar Contraseña" })
+                                <label for="inputPasswordConfirm">Confirmar Contraseña</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3">
+                    <div class="small">
+                        <button type="submit" class="btn bg-info btn-primary border-0 btn-block">Registrarse</button>
+                        <a class="btn bg-info btn-primary border-0 btn-block" href="@Url.Action("Login","Home")"> Inicio Sesión <i class="fa-solid fa-reply"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -9,6 +9,7 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
+
     public class CategoriaController : ApiController
     {
         [HttpGet]
@@ -50,7 +51,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarCategoria")]
-        public IHttpActionResult ConsultarCategoria(long q)
+        public HttpResponseMessage ConsultarCategoria(long q)
         {
             try
             {
@@ -62,47 +63,85 @@ namespace Tienda_G6_Api.Controllers
 
                     if (categoria != null)
                     {
-                        return Ok(new CategoriaEnt
+                        var successResponse = new
                         {
-                            IdCategoria = categoria.IdCategoria,
-                            Descripcion = categoria.Descripcion,
-                            Estado = categoria.Estado
-                        });
+                            mensaje = "Consulta de categoría exitosa.",
+                            data = new CategoriaEnt
+                            {
+                                IdCategoria = categoria.IdCategoria,
+                                Descripcion = categoria.Descripcion,
+                                Estado = categoria.Estado
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Categoría con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Categoría con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar categoría: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarCategoria")]
-        public IHttpActionResult AgregarCategoria(CategoriaEnt entidad)
+        public HttpResponseMessage AgregarCategoria(CategoriaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto categoría no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto categoría no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto categoría.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    // Verificar si la descripción de categoría ya existe en la base de datos
                     if (bd.Categoria.Any(c => c.Descripcion == entidad.Descripcion))
                     {
                         ModelState.AddModelError("Descripcion", "La descripción de categoría ya existe en la base de datos.");
-                        return BadRequest(ModelState);
+                        var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                .Select(e => e.ErrorMessage)
+                                                                .ToList();
+                        var errorResponse = new
+                        {
+                            mensaje = "Error al agregar categoría.",
+                            errores = validationErrors
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                     }
 
                     var categoria = new Categoria
@@ -114,91 +153,150 @@ namespace Tienda_G6_Api.Controllers
                     bd.Categoria.Add(categoria);
                     bd.SaveChanges();
 
-                    return Ok("Categoría agregada exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Categoría agregada exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar categoría: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarCategoria")]
-        public IHttpActionResult ActualizarCategoria(CategoriaEnt entidad)
+        public HttpResponseMessage ActualizarCategoria(CategoriaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto categoría no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto categoría no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto categoría.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    // Verificar si la descripción de categoría ya existe en la base de datos (excepto la categoría actual)
-                    if (bd.Categoria.Any(c => c.Descripcion == entidad.Descripcion && c.IdCategoria != entidad.IdCategoria))
+                    // Verificar si la descripción de categoría ya existe en la base de datos (sin importar el IdCategoria)
+                    var nombreExistente = bd.Categoria.FirstOrDefault(c => c.Descripcion == entidad.Descripcion);
+
+                    if (nombreExistente != null)
                     {
-                        ModelState.AddModelError("Descripcion", "La descripción de categoría ya existe en la base de datos.");
-                        return BadRequest(ModelState);
+                        // Si el nombre existe y no pertenece al registro actual, mostrar un error.
+                        if (nombreExistente.IdCategoria != entidad.IdCategoria)
+                        {
+                            ModelState.AddModelError("Descripcion", "La descripción de categoría ya existe en la base de datos.");
+                            var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                    .Select(e => e.ErrorMessage)
+                                                                    .ToList();
+                            var errorResponse = new
+                            {
+                                mensaje = "Error al agregar categoría.",
+                                errores = validationErrors
+                            };
+
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
+                        }
                     }
 
-                    var categoria = (from x in bd.Categoria
-                                     where x.IdCategoria == entidad.IdCategoria
-                                     select x).FirstOrDefault();
+                    var categoria = bd.Categoria.FirstOrDefault(c => c.IdCategoria == entidad.IdCategoria);
 
                     if (categoria != null)
                     {
                         categoria.Descripcion = entidad.Descripcion;
                         categoria.Estado = entidad.Estado;
                         bd.SaveChanges();
-                        return Ok("Categoría actualizada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Categoría actualizada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Categoría con ID '{entidad.IdCategoria}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Categoría con ID '{entidad.IdCategoria}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar categoría: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarCategoria")]
-        public IHttpActionResult EliminarCategoria(long q)
+        public HttpResponseMessage EliminarCategoria(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var categoria = (from x in bd.Categoria
-                                     where x.IdCategoria == q
-                                     select x).FirstOrDefault();
+                    var categoria = bd.Categoria.FirstOrDefault(c => c.IdCategoria == q);
 
                     if (categoria != null)
                     {
                         bd.Categoria.Remove(categoria);
                         bd.SaveChanges();
-                        return Ok("Categoría eliminada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Categoría eliminada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Categoría con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Categoría con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar categoría: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
+
     }
 
 }

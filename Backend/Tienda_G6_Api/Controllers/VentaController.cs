@@ -52,7 +52,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarVenta")]
-        public IHttpActionResult ConsultarVenta(long q)
+        public HttpResponseMessage ConsultarVenta(long q)
         {
             try
             {
@@ -64,40 +64,70 @@ namespace Tienda_G6_Api.Controllers
 
                     if (venta != null)
                     {
-                        return Ok(new VentaEnt
+                        var successResponse = new
                         {
-                            IdVenta = venta.IdVenta,
-                            IdFactura = venta.IdFactura,
-                            IdArticulo = venta.IdArticulo,
-                            Precio = venta.Precio,
-                            Cantidad = venta.Cantidad
-                        });
+                            mensaje = "Consulta de venta exitosa.",
+                            data = new VentaEnt
+                            {
+                                IdVenta = venta.IdVenta,
+                                IdFactura = venta.IdFactura,
+                                IdArticulo = venta.IdArticulo,
+                                Precio = venta.Precio,
+                                Cantidad = venta.Cantidad
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Venta con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Venta con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar venta: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarVenta")]
-        public IHttpActionResult AgregarVenta(VentaEnt entidad)
+        public HttpResponseMessage AgregarVenta(VentaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto venta no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto venta no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto venta.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
@@ -113,37 +143,52 @@ namespace Tienda_G6_Api.Controllers
                     bd.Venta.Add(venta);
                     bd.SaveChanges();
 
-                    return Ok("Venta agregada exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Venta agregada exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar venta: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarVenta")]
-        public IHttpActionResult ActualizarVenta(VentaEnt entidad)
+        public HttpResponseMessage ActualizarVenta(VentaEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto venta no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto venta no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto venta.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var venta = (from x in bd.Venta
-                                 where x.IdVenta == entidad.IdVenta
-                                 select x).FirstOrDefault();
+                    var venta = bd.Venta.FirstOrDefault(v => v.IdVenta == entidad.IdVenta);
 
                     if (venta != null)
                     {
@@ -152,45 +197,73 @@ namespace Tienda_G6_Api.Controllers
                         venta.Precio = entidad.Precio;
                         venta.Cantidad = entidad.Cantidad;
                         bd.SaveChanges();
-                        return Ok("Venta actualizada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Venta actualizada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Venta con ID '{entidad.IdVenta}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Venta con ID '{entidad.IdVenta}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar venta: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarVenta")]
-        public IHttpActionResult EliminarVenta(long q)
+        public HttpResponseMessage EliminarVenta(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var venta = (from x in bd.Venta
-                                 where x.IdVenta == q
-                                 select x).FirstOrDefault();
+                    var venta = bd.Venta.FirstOrDefault(v => v.IdVenta == q);
 
                     if (venta != null)
                     {
                         bd.Venta.Remove(venta);
                         bd.SaveChanges();
-                        return Ok("Venta eliminada con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Venta eliminada con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Venta con ID '{q}' no encontrada en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Venta con ID '{q}' no encontrada en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar venta: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
     }

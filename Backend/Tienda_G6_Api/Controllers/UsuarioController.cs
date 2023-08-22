@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Net.Http;
+using System.Net;
 using System.Web.Http;
 using Tienda_G6_Api.App_Start;
 using Tienda_G6_Api.Entities;
@@ -9,7 +11,7 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
-    [Authorize]
+//    [Authorize]
     public class UsuarioController : ApiController
     {
 
@@ -79,58 +81,6 @@ namespace Tienda_G6_Api.Controllers
                                     entidad.IdRol);
             }
         }
-        //public IHttpActionResult RegistrarUsuario(UsuarioEnt usuario)
-        //{
-        //    try
-        //    {
-        //        if (usuario == null)
-        //        {
-        //            return BadRequest("El objeto usuario no puede ser nulo.");
-        //        }
-
-        //        if (!ModelState.IsValid)
-        //        {
-        //            return BadRequest(ModelState);
-        //        }
-
-        //        using (var bd = new Tienda_G6Entities1())
-        //        {
-        //            // Verificar si la Identificación ya existe en la base de datos
-        //            if (bd.Usuario.Any(u => u.Identificacion == usuario.Identificacion))
-        //            {
-        //                ModelState.AddModelError("Identificacion", "La Identificación ya existe en la base de datos.");
-        //                return BadRequest(ModelState);
-        //            }
-
-        //            // Verificar si el Email ya existe en la base de datos
-        //            if (bd.Usuario.Any(u => u.Email == usuario.Email))
-        //            {
-        //                ModelState.AddModelError("Email", "El Email ya existe en la base de datos.");
-        //                return BadRequest(ModelState);
-        //            }
-
-        //            var nuevoUsuario = new Usuario
-        //            {
-        //                Identificacion = usuario.Identificacion,
-        //                Nombre = usuario.Nombre,
-        //                Email = usuario.Email,
-        //                Estado = true, // Valor predeterminado para Estado
-        //                Contrasenna = usuario.Contrasenna,
-        //                IdRol = 2 // Valor predeterminado para IdRol
-        //            };
-
-        //            bd.Usuario.Add(nuevoUsuario);
-        //            bd.SaveChanges();
-
-        //            return Ok("Usuario agregado exitosamente.");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Error al agregar usuario: " + ex.Message);
-        //        return InternalServerError();
-        //    }
-        //}
 
         [HttpPost]
         [Route("api/RecuperarContrasenna")]
@@ -204,6 +154,7 @@ namespace Tienda_G6_Api.Controllers
             }
         }
 
+
         [HttpGet]
         [Route("api/ConsultarUsuarios")]
         public IHttpActionResult ConsultarUsuarios()
@@ -212,20 +163,19 @@ namespace Tienda_G6_Api.Controllers
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var datos = (from x in bd.Usuario
-                                 select x).ToList();
+                    var usuarios = bd.Usuario.ToList();
 
-                    if (datos.Count > 0)
+                    if (usuarios.Count > 0)
                     {
                         List<UsuarioEnt> res = new List<UsuarioEnt>();
-                        foreach (var item in datos)
+                        foreach (var item in usuarios)
                         {
                             res.Add(new UsuarioEnt
                             {
                                 IdUsuario = item.IdUsuario,
                                 Identificacion = item.Identificacion,
-                                Email = item.Email,
                                 Nombre = item.Nombre,
+                                Email = item.Email,
                                 Estado = item.Estado,
                                 IdRol = item.IdRol
                             });
@@ -234,7 +184,7 @@ namespace Tienda_G6_Api.Controllers
                         return Ok(res);
                     }
 
-                    return BadRequest("No hay registros en la base de datos.");
+                    return BadRequest("No se encontraron usuarios en la base de datos.");
                 }
             }
             catch (Exception ex)
@@ -246,197 +196,245 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarUsuario")]
-        public IHttpActionResult ConsultarUsuario(long q)
+        public HttpResponseMessage ConsultarUsuario(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var datos = (from x in bd.Usuario
-                                 where x.IdUsuario == q
-                                 select x).FirstOrDefault();
+                    var usuario = bd.Usuario.FirstOrDefault(u => u.IdUsuario == q);
 
-                    if (datos != null)
+                    if (usuario != null)
                     {
-                        UsuarioEnt res = new UsuarioEnt();
-                        res.IdUsuario = datos.IdUsuario;
-                        res.Identificacion = datos.Identificacion;
-                        res.Nombre = datos.Nombre;
-                        res.Email = datos.Email;
-                        res.Estado = datos.Estado;
-                        res.IdRol = datos.IdRol;
+                        var successResponse = new
+                        {
+                            mensaje = "Consulta de usuario exitosa.",
+                            data = new UsuarioEnt
+                            {
+                                IdUsuario = usuario.IdUsuario,
+                                Identificacion = usuario.Identificacion,
+                                Nombre = usuario.Nombre,
+                                Email = usuario.Email,
+                                Estado = usuario.Estado,
+                                IdRol = usuario.IdRol
+                            }
+                        };
 
-                        return Ok(res);
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Usuario con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Usuario con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar usuario: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarUsuario")]
-        public IHttpActionResult AgregarUsuario(UsuarioEnt usuario)
+        public HttpResponseMessage AgregarUsuario(UsuarioEnt entidad)
         {
             try
             {
-                if (usuario == null)
+                if (entidad == null)
                 {
-                    return BadRequest("El objeto usuario no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto usuario no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto usuario.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    // Verificar si la Identificación ya existe en la base de datos
-                    if (bd.Usuario.Any(u => u.Identificacion == usuario.Identificacion))
+                    // Verificar si el correo ya existe en la base de datos.
+                    if (bd.Usuario.Any(u => u.Email == entidad.Email))
                     {
-                        ModelState.AddModelError("Identificacion", "La Identificación ya existe en la base de datos.");
-                        return BadRequest(ModelState);
+                        var errorResponse = new
+                        {
+                            mensaje = "El correo ya existe en la base de datos."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                     }
 
-                    // Verificar si el Email ya existe en la base de datos
-                    if (bd.Usuario.Any(u => u.Email == usuario.Email))
+                    var usuario = new Usuario
                     {
-                        ModelState.AddModelError("Email", "El Email ya existe en la base de datos.");
-                        return BadRequest(ModelState);
-                    }
-
-                    var nuevoUsuario = new Usuario
-                    {
-                        Identificacion = usuario.Identificacion,
-                        Nombre = usuario.Nombre,
-                        Email = usuario.Email,
-                        Estado = usuario.Estado,
-                        Contrasenna = usuario.Contrasenna,
-                        IdRol = usuario.IdRol
+                        Identificacion = entidad.Identificacion,
+                        Nombre = entidad.Nombre,
+                        Email = entidad.Email,
+                        Contrasenna = entidad.Contrasenna,
+                        Estado = entidad.Estado,
+                        IdRol = entidad.IdRol
                     };
 
-                    bd.Usuario.Add(nuevoUsuario);
+                    bd.Usuario.Add(usuario);
                     bd.SaveChanges();
 
-                    return Ok("Usuario agregado exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Usuario agregado exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al agregar usuario: " + ex.Message);
-                return InternalServerError();
+                Console.WriteLine("Error al registrar usuario: " + ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarUsuario")]
-        public IHttpActionResult ActualizarUsuario(UsuarioEnt usuario)
+        public HttpResponseMessage ActualizarUsuario(UsuarioEnt entidad)
         {
             try
             {
-                if (usuario == null || usuario.IdUsuario <= 0)
+                if (entidad == null)
                 {
-                    return BadRequest("Datos de usuario inválidos.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto usuario no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
-                if(!ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto usuario.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var usuarioExistente = bd.Usuario.FirstOrDefault(x => x.IdUsuario == usuario.IdUsuario);
-
-                    if (usuarioExistente == null)
+                    // Verificar si el correo ya existe en la base de datos (sin importar el IdUsuario).
+                    if (bd.Usuario.Any(u => u.Email == entidad.Email && u.IdUsuario != entidad.IdUsuario))
                     {
-                        return NotFound();
+                        var errorResponse = new
+                        {
+                            mensaje = "El correo ya existe en la base de datos."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                     }
 
-                    usuarioExistente.Identificacion = usuario.Identificacion;
-                    usuarioExistente.Nombre = usuario.Nombre;
-                    usuarioExistente.Email = usuario.Email;
-                    usuarioExistente.Estado = usuario.Estado;
-                    usuarioExistente.IdRol = usuario.IdRol;
+                    var usuario = bd.Usuario.FirstOrDefault(u => u.IdUsuario == entidad.IdUsuario);
 
-                    bd.SaveChanges();
+                    if (usuario != null)
+                    {
+                        usuario.Identificacion = entidad.Identificacion;
+                        usuario.Nombre = entidad.Nombre;
+                        usuario.Email = entidad.Email;
+                        usuario.Estado = entidad.Estado;
+                        usuario.IdRol = entidad.IdRol;
 
-                    return Ok("Usuario actualizado exitosamente.");
+                        bd.SaveChanges();
+
+                        var successResponse = new
+                        {
+                            mensaje = "Usuario actualizado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
+                    }
+
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Usuario con ID '{entidad.IdUsuario}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar usuario: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarUsuario")]
-        public IHttpActionResult EliminarUsuario(long q)
+        public HttpResponseMessage EliminarUsuario(long q)
         {
             try
             {
-                if (q <= 0)
-                {
-                    return BadRequest("Id de usuario inválido.");
-                }
-
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var usuario = bd.Usuario.FirstOrDefault(x => x.IdUsuario == q);
+                    var usuario = bd.Usuario.FirstOrDefault(u => u.IdUsuario == q);
 
-                    if (usuario == null)
+                    if (usuario != null)
                     {
-                        return BadRequest($"Usuario con ID '{q}' no encontrado en la base de datos.");
+                        bd.Usuario.Remove(usuario);
+                        bd.SaveChanges();
+
+                        var successResponse = new
+                        {
+                            mensaje = "Usuario eliminado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    bd.Usuario.Remove(usuario);
-                    bd.SaveChanges();
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Usuario con ID '{q}' no encontrado en la base de datos."
+                    };
 
-                    return Ok("Usuario eliminado exitosamente.");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar usuario: " + ex.Message);
-                return InternalServerError();
-            }
-        }
-
-        [HttpGet]
-        [Route("api/ConsultarRoles")]
-        public List<RolEnt> ConsultarRoles()
-        {
-            using (var bd = new Tienda_G6Entities1())
-            {
-                var datos = (from x in bd.Rol
-                             select x).ToList();
-
-                if (datos.Count > 0)
+                var errorResponse = new
                 {
-                    List<RolEnt> res = new List<RolEnt>();
-                    foreach (var item in datos)
-                    {
-                        res.Add(new RolEnt
-                        {
-                            IdRol = item.IdRol,
-                            NombreRol = item.NombreRol
-                        });
-                    }
-
-                    return res;
-                }
-
-                return new List<RolEnt>();
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
-    
+
     }
 }

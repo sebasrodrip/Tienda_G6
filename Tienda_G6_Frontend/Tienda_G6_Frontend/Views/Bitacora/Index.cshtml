@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Title = "Categorias";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestión de Categorias de Articulos</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Categorías</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+
+    <script>
+        function mostrarDatosEnFormulario(idBitacora, fechaHora, mensajeError, origen, idUsuario, direccionIP) {
+            // Llena los campos del formulario con los datos
+            $("#bitacoraId").val(idBitacora);
+            $("#txtFechaHora").val(fechaHora);
+            $("#txtMensajeError").val(mensajeError);
+            $("#txtOrigen").val(origen);
+            $("#txtIdUsuario").val(idUsuario);
+            $("#txtDireccionIP").val(direccionIP);
+
+            // Muestra el formulario
+            $("#formContainer").show();
+        }
+
+        function ocultarFormulario() {
+            // Limpia el formulario
+            document.getElementById("formularioBitacora").reset();
+
+            // Oculta el formulario
+            $("#formContainer").hide();
+        }
+    </script>
+
+}
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Categoria</h3>
+            </div>
+            <form id="formularioBitacora">
+                <fieldset>
+                    <input type="hidden" id="bitacoraId" name="IdBitacora" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="txtFechaHora">Fecha y Hora:</label>
+                                <input type="datetime-local" class="form-control" id="txtFechaHora" name="FechaHora" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtMensajeError">Mensaje de Error:</label>
+                                <textarea class="form-control" id="txtMensajeError" name="MensajeError" rows="4" required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtOrigen">Origen:</label>
+                                <input type="text" class="form-control" id="txtOrigen" name="Origen" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtIdUsuario">ID del Usuario:</label>
+                                <input type="text" class="form-control" id="txtIdUsuario" name="IdUsuario" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtDireccionIP">Dirección IP:</label>
+                                <input type="text" class="form-control" id="txtDireccionIP" name="DireccionIP" required>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="ocultarFormulario()">Ocultar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Categorías</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Fecha y Hora</th>
+                            <th class="text-center">Mensaje de Error</th>
+                            <th class="text-center">Origen</th>
+                            <th class="text-center">ID de Usuario</th>
+                            <th class="text-center">Dirección IP</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var bitacora in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@bitacora.IdBitacora</td>
+                                <td class="text-center">@bitacora.FechaHora</td>
+                                <td class="text-center">@bitacora.MensajeError</td>
+                                <td class="text-center">@bitacora.Origen</td>
+                                <td class="text-center">@bitacora.IdUsuario</td>
+                                <td class="text-center">@bitacora.DireccionIP</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar"
+                                       data-id="@bitacora.IdBitacora"
+                                       data-fecha-hora="@bitacora.FechaHora"
+                                       data-mensaje-error="@bitacora.MensajeError"
+                                       data-origen="@bitacora.Origen"
+                                       data-id-usuario="@bitacora.IdUsuario"
+                                       data-direccion-ip="@bitacora.DireccionIP">Ver</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Fecha y Hora</th>
+                            <th class="text-center">Mensaje de Error</th>
+                            <th class="text-center">Origen</th>
+                            <th class="text-center">ID de Usuario</th>
+                            <th class="text-center">Dirección IP</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

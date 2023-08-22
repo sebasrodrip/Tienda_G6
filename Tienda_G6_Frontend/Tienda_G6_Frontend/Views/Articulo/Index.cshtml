@@ -1,0 +1,362 @@
+﻿@{
+    ViewBag.Title = "Categorias";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestión de Categorias de Articulos</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Categorías</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <!--Script para cerrar el formulario y limpiarlo-->
+    <script>
+        function cerrarForm() {
+            $("#articuloId").val(0);
+            document.getElementById("formularioArticulo").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+
+    <!--Script para enviar los datos de la tabla al formulario-->
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var articuloId = $(this).data("id");
+                var row = $(this).closest("tr");
+
+                var categoriaId = row.find("td:eq(1)").data("categoria-id"); // Obtener el ID de la categoría desde el atributo data
+                var descripcion = row.find("td:eq(2)").text();
+                var detalle = row.find("td:eq(3)").text();
+                var precio = row.find("td:eq(4)").text();
+                var existencia = row.find("td:eq(5)").text();
+                var estado = row.find("td:eq(6)").text();
+
+                // Actualizar los campos del formulario con los valores correspondientes
+                $("#categoriaNuevaArticulo").val(categoriaId);
+                $("#txtDescripcion").val(descripcion);
+                $("#txtDetalle").val(detalle);
+                $("#txtPrecio").val(precio);
+                $("#txtExistencia").val(existencia);
+
+                if (estado === "Activo") {
+                    $("#estadoArticulo").val("True");
+                } else {
+                    $("#estadoArticulo").val("False");
+                }
+
+                // Actualiza el valor del campo oculto "IdArticulo"
+                $("#articuloId").val(articuloId);
+
+                // Configura la acción del formulario para la edición
+                $("#formularioArticulo").attr("action", "/Articulo/Editar/" + articuloId);
+
+                // Oculta el botón "Guardar" y muestra el botón "Modificar"
+                $("#btnSubmit").hide();
+                $("#btnModificar").show();
+
+                $("#formContainer").show();
+            });
+
+            $("#btnCerrarFormulario").click(function () {
+                document.getElementById("formularioArticulo").reset();
+                $("#formularioArticulo").attr("action", "/Articulo/Index");
+
+                // Muestra el botón "Guardar" y oculta el botón "Modificar"
+                $("#btnSubmit").show();
+                $("#btnModificar").hide();
+
+                $("#formContainer").hide();
+            });
+        });
+    </script>
+
+    <!--Script para enviar el formulario de registro y actualizar, mostrar las alertas, respuestas del Backend y mostrar el botón de recargar página-->
+    <script>
+        $(document).ready(function () {
+            $("#formularioArticulo").submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                var clickedButtonId = $(document.activeElement).attr("id");
+
+                var url = "";
+
+                if (clickedButtonId === "btnModificar") {
+                    url = "/Articulo/Actualizar";
+                } else {
+                    url = "/Articulo/Agregar";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.mensaje) {
+                            if (response.errores && response.errores.length > 0) {
+                                alert(response.errores.join('\n'));
+                            }
+                        } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Operación exitosa',
+                                text: response.Mensaje
+                            });
+                            $("#btnRecargar").show();
+                            if (response.Mensaje == "Operación exitosa: Artículo agregado exitosamente." || response.Mensaje == "Operación exitosa: Artículo actualizado con éxito.") {
+                                cerrarForm();
+                            };
+
+                            if (response.Errores && response.Errores.length > 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Error en la solicitud',
+                                    text: response.Errores.join('\n')
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en la solicitud AJAX'
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    <!--Script para eliminar un registro-->
+    <script>
+        $(document).ready(function () {
+            var articuloIdEliminar = null;
+
+            $(".btnEliminar").click(function (e) {
+                e.preventDefault();
+
+                articuloIdEliminar = $(this).data("id");
+                $("#articuloIdEliminar").val(articuloIdEliminar);
+                $("#confirmarEliminarModal").modal("show");
+            });
+
+            $("#btnConfirmarEliminar").click(function () {
+                if (articuloIdEliminar !== null) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Articulo/Eliminar/" + articuloIdEliminar,
+                        data: $("#eliminarArticuloForm").serialize(),
+                        success: function (response) {
+                            if (response.mensaje) {
+                                if (response.errores && response.errores.length > 0) {
+                                    alert(response.errores.join('\n'));
+                                }
+                            } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Operación exitosa',
+                                    text: response.Mensaje
+                                });
+                                $("#btnRecargar").show();
+                                if (response.Mensaje == "Operación exitosa: Artículo eliminado con éxito.") {
+                                    $("#confirmarEliminarModal").modal("hide");
+                                };
+
+                                if (response.Errores && response.Errores.length > 0) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Error en la solicitud',
+                                        text: response.Errores.join('\n')
+                                    });
+                                }
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud AJAX'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!--Script para recargar la página-->
+    <script>
+        $("#btnRecargar").click(function () {
+            location.reload();
+            $("#btnRecargar").hide();
+        });
+    </script>
+}
+
+<!--Modal para confirmar eliminacion-->
+<div class="modal fade" id="confirmarEliminarModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmar Eliminación</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+                <form id="eliminarArticuloForm">
+                    <input type="hidden" name="q" id="articuloIdEliminar" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Categoria</h3>
+            </div>
+            <form id="formularioArticulo">
+                <fieldset>
+                    <input type="hidden" id="articuloId" name="IdArticulo" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="categoriaNuevaArticulo">Categoría:</label>
+                                <select class="form-control" id="categoriaNuevaArticulo" name="IdCategoria" required>
+                                    <option value="1">Categoría 1</option>
+                                    <option value="2">Categoría 2</option>
+                                    <option value="3">Categoría 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtDescripcion">Nombre:</label>
+                                <input type="text" class="form-control" id="txtDescripcion" name="Descripcion" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtDetalle">Detalle:</label>
+                                <input type="text" class="form-control" id="txtDetalle" name="Detalle" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtPrecio">Precio:</label>
+                                <input type="number" class="form-control" id="txtPrecio" name="Precio" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtExistencia">Existencia:</label>
+                                <input type="number" class="form-control" id="txtExistencia" name="Existencia" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="estadoArticulo">Estado:</label>
+                                <select class="form-control" id="estadoArticulo" name="Estado">
+                                    <option value="True">ACTIVO</option>
+                                    <option value="False">INACTIVO</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2" id="btnModificar" style="display: none;">Modificar</button>
+                    <button type="submit" class="btn btn-primary mr-2" id="btnSubmit">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Categorías</h3>
+                <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Categoría</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Detalle</th>
+                            <th class="text-center">Precio</th>
+                            <th class="text-center">Existencia</th>
+                            <th class="text-center">Estado</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var articulo in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@articulo.IdArticulo</td>
+                                <td class="text-center" data-categoria-id="@articulo.IdCategoria">@articulo.IdCategoria</td>
+                                <td class="text-center">@articulo.Descripcion</td>
+                                <td class="text-center">@articulo.Detalle</td>
+                                <td class="text-center">@articulo.Precio</td>
+                                <td class="text-center">@articulo.Existencia</td>
+                                @if (articulo.Estado)
+                                {
+                                    <td class="text-center">Activo</td>
+                                }
+                                else
+                                {
+                                    <td class="text-center">Inactivo</td>
+                                }
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="@articulo.IdArticulo"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-danger btnEliminar" name="q" data-id="@articulo.IdArticulo"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Categoría</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Detalle</th>
+                            <th class="text-center">Precio</th>
+                            <th class="text-center">Existencia</th>
+                            <th class="text-center">Estado</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,370 @@
+﻿@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+    <!-- Estilos adicionales específicos para esta página -->
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestion de Usuarios</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Usuarios</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <!--Script para cerrar el formulario y limpiarlo-->
+    <script>
+        function cerrarForm() {
+            $("#usuarioId").val(0);
+            document.getElementById("formularioUsuario").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+
+    <!--Script para enviar los datos de la tabla al formulario-->
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var usuarioId = $(this).data("id");
+                var row = $(this).closest("tr");
+
+                var identificacion = row.find("td:eq(1)").text();
+                var nombre = row.find("td:eq(2)").text();
+                var email = row.find("td:eq(3)").text();
+                var estadoText = row.find("td:eq(4)").text();
+                var idRol = row.find("td:eq(5)").data("id-rol");
+
+                $("#txtContrasenna").show().val("123456");
+                $("#txtConfirmarContrasenna").show().val("123456");
+
+                $("#txtContrasenna, #txtConfirmarContrasenna").hide();
+                $("label[for='txtContrasenna'], label[for='txtConfirmarContrasenna']").hide();
+
+                // Mapear el estado del texto ("Activo" o "Inactivo") a "True" o "False"
+                var estado = estadoText === "Activo" ? "True" : "False";
+
+                $("#txtIdentificacion").val(identificacion);
+                $("#txtNombre").val(nombre);
+                $("#txtEmail").val(email);
+                $("#estadoUsuario").val(estado);
+                $("#idRolUsuario").val(idRol);
+
+                // Actualiza el valor del campo oculto "IdUsuario"
+                $("#usuarioId").val(usuarioId);
+
+                // Configura la acción del formulario para la edición
+                $("#formularioUsuario").attr("action", "/Usuario/Editar/" + usuarioId);
+
+                // Oculta el botón "Guardar" y muestra el botón "Modificar"
+                $("#btnSubmit").hide();
+                $("#btnModificar").show();
+
+                $("#formContainer").show();
+            });
+
+            $("#btnCerrarFormulario").click(function () {
+                document.getElementById("formularioUsuario").reset();
+                $("#formularioUsuario").attr("action", "/Usuario/Index");
+
+                // Muestra el botón "Guardar" y oculta el botón "Modificar"
+                $("#btnSubmit").show();
+                $("#btnModificar").hide();
+
+                $("#txtContrasenna, #txtConfirmarContrasenna").show();
+                $("label[for='txtContrasenna'], label[for='txtConfirmarContrasenna']").show();
+
+                $("#formContainer").hide();
+            });
+        });
+    </script>
+
+    <!-- Script para enviar el formulario de registro y actualizar, mostrar las alertas, respuestas del Backend y mostrar botón de recargar página -->
+    <script>
+        $(document).ready(function () {
+            $("#formularioUsuario").submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                var clickedButtonId = $(document.activeElement).attr("id");
+
+                var url = "";
+
+                if (clickedButtonId === "btnModificar") {
+                    url = "/Usuario/Actualizar";
+                } else {
+                    url = "/Usuario/Agregar";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.mensaje) {
+                            if (response.errores && response.errores.length > 0) {
+                                alert(response.errores.join('\n'));
+                            }
+                        } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Operación exitosa',
+                                text: response.Mensaje
+                            });
+                            $("#btnRecargar").show();
+                            if (response.Mensaje == "Operación exitosa: Usuario agregado exitosamente." || response.Mensaje == "Operación exitosa: Usuario actualizado con éxito.") {
+                                cerrarForm();
+                            };
+
+                            if (response.Errores && response.Errores.length > 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Error en la solicitud',
+                                    text: response.Errores.join('\n')
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en la solicitud AJAX'
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    <!-- Script para eliminar un registro -->
+    <script>
+        $(document).ready(function () {
+            var usuarioIdEliminar = null;
+
+            $(".btnEliminar").click(function (e) {
+                e.preventDefault();
+
+                usuarioIdEliminar = $(this).data("id");
+                $("#usuarioIdEliminar").val(usuarioIdEliminar);
+                $("#confirmarEliminarModal").modal("show");
+            });
+
+            $("#btnConfirmarEliminar").click(function () {
+                if (usuarioIdEliminar !== null) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Usuario/Eliminar/" + usuarioIdEliminar,
+                        data: $("#eliminarUsuarioForm").serialize(),
+                        success: function (response) {
+                            if (response.mensaje) {
+                                if (response.errores && response.errores.length > 0) {
+                                    alert(response.errores.join('\n'));
+                                }
+                            } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Operación exitosa',
+                                    text: response.Mensaje
+                                });
+                                $("#btnRecargar").show();
+                                if (response.Mensaje == "Operación exitosa: Usuario eliminado con éxito.") {
+                                    $("#confirmarEliminarModal").modal("hide");
+                                };
+
+                                if (response.Errores && response.Errores.length > 0) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Error en la solicitud',
+                                        text: response.Errores.join('\n')
+                                    });
+                                }
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud AJAX'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!--Script para recargar la página-->
+    <script>
+        $("#btnRecargar").click(function () {
+            location.reload();
+            $("#btnRecargar").hide();
+        });
+    </script>
+}
+
+<!--Modal para confirmar eliminacion-->
+<div class="modal fade" id="confirmarEliminarModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmar Eliminación</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+                <form id="eliminarUsuarioForm">
+                    <input type="hidden" name="q" id="usuarioIdEliminar" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Categoria</h3>
+            </div>
+            <form id="formularioUsuario">
+                <fieldset>
+                    <input type="hidden" id="usuarioId" name="IdUsuario" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="txtIdentificacion">Identificación:</label>
+                                <input type="text" class="form-control" id="txtIdentificacion" name="Identificacion" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtNombre">Nombre:</label>
+                                <input type="text" class="form-control" id="txtNombre" name="Nombre" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtEmail">Email:</label>
+                                <input type="email" class="form-control" id="txtEmail" name="Email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="estadoUsuario">Estado:</label>
+                                <select class="form-control" id="estadoUsuario" name="Estado">
+                                    <option value="True">ACTIVO</option>
+                                    <option value="False">INACTIVO</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label for="idRolUsuario">Rol:</label>
+                                <select class="form-control" id="idRolUsuario" name="IdRol">
+                                    @foreach (var item in Model.Roles)
+                                    {
+                                        <option value="@item.IdRol">@item.NombreRol</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtContrasenna">Contraseña:</label>
+                                <input type="password" class="form-control" id="txtContrasenna" name="Contrasenna" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtConfirmarContrasenna">Confirmar Contraseña:</label>
+                                <input type="password" class="form-control" id="txtConfirmarContrasenna" name="ConfirmarContrasenna" required>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2" id="btnModificar" style="display: none;">Modificar</button>
+                    <button type="submit" class="btn btn-primary mr-2" id="btnSubmit">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Categorías</h3>
+                <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Identificación</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var usuario in Model.Usuarios)
+                        {
+                            <tr>
+                                <td class="text-center">@usuario.IdUsuario</td>
+                                <td class="text-center">@usuario.Identificacion</td>
+                                <td class="text-center">@usuario.Nombre</td>
+                                <td class="text-center">@usuario.Email</td>
+                                @if (usuario.Estado)
+                                {
+                                    <td class="text-center">Activo</td>
+                                }
+                                else
+                                {
+                                    <td class="text-center">Inactivo</td>
+                                }
+                                <td class="text-center" data-id-rol="@usuario.IdRol">@usuario.IdRol</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="@usuario.IdUsuario"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-danger btnEliminar" name="q" data-id="@usuario.IdUsuario"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Identificación</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Rol</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

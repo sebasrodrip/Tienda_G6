@@ -403,7 +403,9 @@ Backend/Tienda_G6_Api/Models/**
 #Ignorar las carpetas packages
 Frontend/packages/**
 Backend/packages/**
+Tienda_G6_Frontend/packages/**
 
 #Ignorar las carpetas .vs
 Frontend/.vs/**
 Backend/.vs/**
+Tienda_G6_Frontend/.vs/**

@@ -54,7 +54,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarCliente")]
-        public IHttpActionResult ConsultarCliente(long q)
+        public HttpResponseMessage ConsultarCliente(long q)
         {
             try
             {
@@ -66,42 +66,72 @@ namespace Tienda_G6_Api.Controllers
 
                     if (cliente != null)
                     {
-                        return Ok(new ClienteEnt
+                        var successResponse = new
                         {
-                            IdCliente = cliente.IdCliente,
-                            IdUsuario = cliente.IdUsuario,
-                            IdCredito = cliente.IdCredito,
-                            Nombre = cliente.Nombre,
-                            Apellidos = cliente.Apellidos,
-                            Email = cliente.Email,
-                            Telefono = cliente.Telefono
-                        });
+                            mensaje = "Consulta de cliente exitosa.",
+                            data = new ClienteEnt
+                            {
+                                IdCliente = cliente.IdCliente,
+                                IdUsuario = cliente.IdUsuario,
+                                IdCredito = cliente.IdCredito,
+                                Nombre = cliente.Nombre,
+                                Apellidos = cliente.Apellidos,
+                                Email = cliente.Email,
+                                Telefono = cliente.Telefono
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Cliente con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Cliente con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar cliente: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarCliente")]
-        public IHttpActionResult AgregarCliente(ClienteEnt entidad)
+        public HttpResponseMessage AgregarCliente(ClienteEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto cliente no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto cliente no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto cliente.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
@@ -119,37 +149,52 @@ namespace Tienda_G6_Api.Controllers
                     bd.Cliente.Add(cliente);
                     bd.SaveChanges();
 
-                    return Ok("Cliente agregado exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Cliente agregado exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar cliente: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarCliente")]
-        public IHttpActionResult ActualizarCliente(ClienteEnt entidad)
+        public HttpResponseMessage ActualizarCliente(ClienteEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto cliente no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto cliente no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto cliente.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var cliente = (from x in bd.Cliente
-                                   where x.IdCliente == entidad.IdCliente
-                                   select x).FirstOrDefault();
+                    var cliente = bd.Cliente.FirstOrDefault(c => c.IdCliente == entidad.IdCliente);
 
                     if (cliente != null)
                     {
@@ -160,45 +205,73 @@ namespace Tienda_G6_Api.Controllers
                         cliente.Email = entidad.Email;
                         cliente.Telefono = entidad.Telefono;
                         bd.SaveChanges();
-                        return Ok("Cliente actualizado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Cliente actualizado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Cliente con ID '{entidad.IdCliente}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Cliente con ID '{entidad.IdCliente}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar cliente: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarCliente")]
-        public IHttpActionResult EliminarCliente(long q)
+        public HttpResponseMessage EliminarCliente(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var cliente = (from x in bd.Cliente
-                                   where x.IdCliente == q
-                                   select x).FirstOrDefault();
+                    var cliente = bd.Cliente.FirstOrDefault(c => c.IdCliente == q);
 
                     if (cliente != null)
                     {
                         bd.Cliente.Remove(cliente);
                         bd.SaveChanges();
-                        return Ok("Cliente eliminado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Cliente eliminado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Cliente con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Cliente con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar cliente: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
     }

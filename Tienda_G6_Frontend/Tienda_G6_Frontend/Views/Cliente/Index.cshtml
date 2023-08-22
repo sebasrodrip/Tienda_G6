@@ -1,0 +1,352 @@
+﻿@{
+    ViewBag.Title = "Categorias";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestión de Categorias de Articulos</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Categorías</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <!--Script para cerrar el formulario y limpiarlo-->
+    <script>
+        function cerrarForm() {
+            $("#clienteId").val(0);
+            document.getElementById("formularioCliente").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+
+    <!--Script para enviar los datos de la tabla al formulario-->
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var clienteId = $(this).data("id");
+                var row = $(this).closest("tr");
+
+                var idUsuario = row.find("td:eq(1)").data("usuario-id"); // Obtener el ID de usuario desde el atributo data
+                var idCredito = row.find("td:eq(2)").data("credito-id"); // Obtener el ID de crédito desde el atributo data
+                var nombre = row.find("td:eq(3)").text();
+                var apellidos = row.find("td:eq(4)").text();
+                var email = row.find("td:eq(5)").text();
+                var telefono = row.find("td:eq(6)").text();
+
+                // Actualizar los campos del formulario con los valores correspondientes
+                $("#usuarioCliente").val(idUsuario);
+                $("#creditoCliente").val(idCredito);
+                $("#txtNombre").val(nombre);
+                $("#txtApellidos").val(apellidos);
+                $("#txtEmail").val(email);
+                $("#txtTelefono").val(telefono);
+
+                // Actualiza el valor del campo oculto "IdCliente"
+                $("#clienteId").val(clienteId);
+
+                // Configura la acción del formulario para la edición
+                $("#formularioCliente").attr("action", "/Cliente/Editar/" + clienteId);
+
+                // Oculta el botón "Guardar" y muestra el botón "Modificar"
+                $("#btnSubmit").hide();
+                $("#btnModificar").show();
+
+                $("#formContainer").show();
+            });
+
+            $("#btnCerrarFormulario").click(function () {
+                document.getElementById("formularioCliente").reset();
+                $("#formularioCliente").attr("action", "/Cliente/Index");
+
+                // Muestra el botón "Guardar" y oculta el botón "Modificar"
+                $("#btnSubmit").show();
+                $("#btnModificar").hide();
+
+                $("#formContainer").hide();
+            });
+        });
+    </script>
+    <!-- Script para enviar el formulario de registro y actualizar, mostrar las alertas, respuestas del Backend y mostrar botón de recargar página -->
+    <script>
+        $(document).ready(function () {
+            $("#formularioCliente").submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                var clickedButtonId = $(document.activeElement).attr("id");
+
+                var url = "";
+
+                if (clickedButtonId === "btnModificar") {
+                    url = "/Cliente/Actualizar";
+                } else {
+                    url = "/Cliente/Agregar";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.mensaje) {
+                            if (response.errores && response.errores.length > 0) {
+                                alert(response.errores.join('\n'));
+                            }
+                        } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Operación exitosa',
+                                text: response.Mensaje
+                            });
+                            $("#btnRecargar").show();
+                            if (response.Mensaje == "Operación exitosa: Cliente agregado exitosamente." || response.Mensaje == "Operación exitosa: Cliente actualizado con éxito.") {
+                                cerrarForm();
+                            };
+
+                            if (response.Errores && response.Errores.length > 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Error en la solicitud',
+                                    text: response.Errores.join('\n')
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en la solicitud AJAX'
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    <!-- Script para eliminar un registro -->
+    <script>
+        $(document).ready(function () {
+            var clienteIdEliminar = null;
+
+            $(".btnEliminar").click(function (e) {
+                e.preventDefault();
+
+                clienteIdEliminar = $(this).data("id");
+                $("#clienteIdEliminar").val(clienteIdEliminar);
+                $("#confirmarEliminarModal").modal("show");
+            });
+
+            $("#btnConfirmarEliminar").click(function () {
+                if (clienteIdEliminar !== null) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Cliente/Eliminar/" + clienteIdEliminar,
+                        data: $("#eliminarClienteForm").serialize(),
+                        success: function (response) {
+                            if (response.mensaje) {
+                                if (response.errores && response.errores.length > 0) {
+                                    alert(response.errores.join('\n'));
+                                }
+                            } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Operación exitosa',
+                                    text: response.Mensaje
+                                });
+                                $("#btnRecargar").show();
+                                if (response.Mensaje == "Operación exitosa: Cliente eliminado con éxito.") {
+                                    $("#confirmarEliminarModal").modal("hide");
+                                };
+
+                                if (response.Errores && response.Errores.length > 0) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Error en la solicitud',
+                                        text: response.Errores.join('\n')
+                                    });
+                                }
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud AJAX'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!--Script para recargar la página-->
+    <script>
+        $("#btnRecargar").click(function () {
+            location.reload();
+            $("#btnRecargar").hide();
+        });
+    </script>
+}
+
+<!--Modal para confirmar eliminacion-->
+<div class="modal fade" id="confirmarEliminarModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmar Eliminación</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+                <form id="eliminarClienteForm">
+                    <input type="hidden" name="q" id="clienteIdEliminar" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Categoria</h3>
+            </div>
+            <form id="formularioCliente">
+                <fieldset>
+                    <input type="hidden" id="clienteId" name="IdCliente" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="usuarioCliente">Usuario:</label>
+                                <select class="form-control" id="usuarioCliente" name="IdUsuario" required>
+                                    <!-- Aquí debes llenar las opciones del select con los usuarios disponibles -->
+                                    <option value="1">Usuario 1</option>
+                                    <option value="2">Usuario 2</option>
+                                    <option value="3">Usuario 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="creditoCliente">Crédito:</label>
+                                <select class="form-control" id="creditoCliente" name="IdCredito" required>
+                                    <!-- Aquí debes llenar las opciones del select con los créditos disponibles -->
+                                    <option value="1">Crédito 1</option>
+                                    <option value="2">Crédito 2</option>
+                                    <option value="3">Crédito 3</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtNombre">Nombre:</label>
+                                <input type="text" class="form-control" id="txtNombre" name="Nombre" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtApellidos">Apellidos:</label>
+                                <input type="text" class="form-control" id="txtApellidos" name="Apellidos" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtEmail">Email:</label>
+                                <input type="email" class="form-control" id="txtEmail" name="Email" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="txtTelefono">Teléfono:</label>
+                                <input type="text" class="form-control" id="txtTelefono" name="Telefono" required>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2" id="btnModificar" style="display: none;">Modificar</button>
+                    <button type="submit" class="btn btn-primary mr-2" id="btnSubmit">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Categorías</h3>
+                <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Usuario</th>
+                            <th class="text-center">Crédito</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Apellidos</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Teléfono</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cliente in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@cliente.IdCliente</td>
+                                <td class="text-center" data-usuario-id="@cliente.IdUsuario">@cliente.IdUsuario</td>
+                                <td class="text-center" data-credito-id="@cliente.IdCredito">@cliente.IdCredito</td>
+                                <td class="text-center">@cliente.Nombre</td>
+                                <td class="text-center">@cliente.Apellidos</td>
+                                <td class="text-center">@cliente.Email</td>
+                                <td class="text-center">@cliente.Telefono</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="@cliente.IdCliente"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-danger btnEliminar" name="q" data-id="@cliente.IdCliente"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Usuario</th>
+                            <th class="text-center">Crédito</th>
+                            <th class="text-center">Nombre</th>
+                            <th class="text-center">Apellidos</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Teléfono</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

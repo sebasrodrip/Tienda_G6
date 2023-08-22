@@ -1,0 +1,295 @@
+﻿@{
+    ViewBag.Title = "Creditos";
+    Layout = "~/Views/Shared/_Layout - Admin.cshtml";
+}
+
+@section styles {
+}
+
+@section header {
+    <div class="col-sm-6">
+        <h1 class="m-0">Gestión de Creditos</h1>
+    </div>
+    <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item">
+                <a href="#">Panel Administrador</a>
+            </li>
+            <li class="breadcrumb-item active">Creditos</li>
+        </ol>
+    </div>
+}
+
+@section scripts {
+    <!--Script para cerrar el formulario y limpiarlo-->
+    <script>
+        function cerrarForm() {
+            $("#creditoId").val(0);
+            document.getElementById("formularioCredito").reset();
+            $("#formContainer").hide();
+        }
+    </script>
+
+    <!--Script para enviar los datos de la tabla al formulario-->
+    <script>
+        $(document).ready(function () {
+            $("#btnToggleForm").click(function () {
+                $("#formContainer").toggle();
+            });
+
+            $(".btnEditar").click(function () {
+                var creditoId = $(this).data("id");
+                var row = $(this).closest("tr");
+
+                var limite = row.find("td:eq(1)").text();
+
+                $("#txtLimite").val(limite);
+
+                // Actualiza el valor del campo oculto "CreditoId"
+                $("#creditoId").val(creditoId);
+
+                // Configura la acción del formulario para la edición
+                $("#formularioCredito").attr("action", "/Credito/Editar/" + creditoId);
+
+                // Oculta el botón "Guardar" y muestra el botón "Modificar"
+                $("#btnSubmit").hide();
+                $("#btnModificar").show();
+                $("#formContainer").show();
+            });
+
+            $("#btnCerrarFormulario").click(function () {
+                document.getElementById("formularioCredito").reset();
+                $("#formularioCredito").attr("action", "/Credito/Index");
+
+                // Muestra el botón "Guardar" y oculta el botón "Modificar"
+                $("#btnSubmit").show();
+                $("#btnModificar").hide();
+                $("#formContainer").hide();
+            });
+        });
+    </script>
+
+    <!--Script para enviar el formulario de registro y actualizar, mostrar las alertas, respuestas del Backend y mostrar boton de recargar página-->
+    <script>
+        $(document).ready(function () {
+            $("#formularioCredito").submit(function (e) {
+                e.preventDefault();
+                var formData = $(this).serialize();
+
+                var clickedButtonId = $(document.activeElement).attr("id");
+
+                var url = "";
+
+                if (clickedButtonId === "btnModificar") {
+                    url = "/Credito/Actualizar";
+                } else {
+                    url = "/Credito/Agregar";
+                }
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (response) {
+                        if (response.mensaje) {
+                            if (response.errores && response.errores.length > 0) {
+                                alert(response.errores.join('\n'));
+                            }
+                        } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Operación exitosa',
+                                text: response.Mensaje
+                            });
+                            $("#btnRecargar").show();
+                            if (response.Mensaje == "Operación exitosa: Crédito agregado exitosamente." || response.Mensaje == "Operación exitosa: Crédito actualizado con éxito.") {
+                                cerrarForm();
+                            };
+
+                            if (response.Errores && response.Errores.length > 0) {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Error en la solicitud',
+                                    text: response.Errores.join('\n')
+                                });
+                            }
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error en la solicitud AJAX'
+                        });
+                    }
+                });
+
+            });
+        });
+    </script>
+
+    <!--Script para eliminar un registro-->
+    <script>
+        $(document).ready(function () {
+            var creditoIdEliminar = null;
+
+            $(".btnEliminar").click(function (e) {
+                e.preventDefault();
+
+                creditoIdEliminar = $(this).data("id");
+                $("#creditoIdEliminar").val(creditoIdEliminar);
+                $("#confirmarEliminarModal").modal("show");
+            });
+
+            $("#btnConfirmarEliminar").click(function () {
+                if (creditoIdEliminar !== null) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Credito/Eliminar/" + creditoIdEliminar,
+                        data: $("#eliminarCreditoForm").serialize(),
+                        success: function (response) {
+                            if (response.mensaje) {
+                                if (response.errores && response.errores.length > 0) {
+                                    alert(response.errores.join('\n'));
+                                }
+                            } else if (response.Success !== undefined && response.Mensaje !== undefined) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Operación exitosa',
+                                    text: response.Mensaje
+                                });
+                                $("#btnRecargar").show();
+                                if (response.Mensaje == "Operación exitosa: Crédito eliminado con éxito.") {
+                                    $("#confirmarEliminarModal").modal("hide");
+                                };
+
+                                if (response.Errores && response.Errores.length > 0) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Error en la solicitud',
+                                        text: response.Errores.join('\n')
+                                    });
+                                }
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error en la solicitud AJAX'
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <!--Script para recargar la página-->
+    <script>
+        $("#btnRecargar").click(function () {
+            location.reload();
+            $("#btnRecargar").hide();
+        });
+    </script>
+}
+
+<!--Modal para confirmar eliminacion-->
+<div class="modal fade" id="confirmarEliminarModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Confirmar Eliminación</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este credito?</p>
+                <form id="eliminarCreditoForm">
+                    <input type="hidden" name="q" id="creditoIdEliminar" />
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Formulario-->
+<div class="row" id="formContainer" style="display: none;">
+    <div class="col-md-12">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="">Agregar Credito</h3>
+            </div>
+            <form id="formularioCredito">
+                <fieldset>
+                    <input type="hidden" id="creditoId" name="IdCredito" value="0">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="txtLimite">Límite de Crédito:</label>
+                                <input type="number" class="form-control" id="txtLimite" name="Limite" required>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div class="card-footer d-flex justify-content-center align-items-center">
+                    <button type="submit" class="btn btn-primary mr-2" id="btnModificar" style="display: none;">Modificar</button>
+                    <button type="submit" class="btn btn-primary mr-2" id="btnSubmit">Guardar</button>
+                    <button type="button" id="btnCerrarFormulario" class="btn btn-secondary" onclick="cerrarForm()">Cerrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!--Datatable-->
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="">Lista de Creditos</h3>
+                <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
+                <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="example1" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Límite de Crédito</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var credito in Model)
+                        {
+                            <tr>
+                                <td class="text-center">@credito.IdCredito</td>
+                                <td class="text-center">@credito.Limite</td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-warning btnEditar" data-id="@credito.IdCredito"><i class="fas fa-edit"></i></a>
+                                </td>
+                                <td class="text-center">
+                                    <a href="#" class="btn btn-danger btnEliminar" data-id="@credito.IdCredito"><i class="fas fa-trash-alt"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">Límite de Crédito</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

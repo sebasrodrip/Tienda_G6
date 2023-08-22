@@ -1,0 +1,25 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout - Login.cshtml";
+}
+
+<div id="layoutError">
+    <div id="layoutError_content">
+        <main>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-6">
+                        <div class="text-center mt-4" style="color:white">
+                            <img class="mb-4 img-error" src="~/WebStyles/assets/img/error-404-monochrome.svg" />
+                            <p class="lead">Se presentó un problema en el sistema</p>
+                            <p class="lead">Contacte con el administrador</p>
+                            <a href="@Url.Action("Login", "Home")">
+                                <button class="btn btn-primary bg-info border-0">Regresar<i class="fas fa-arrow-left me-1"></i></button>
+                                
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>

@@ -13,13 +13,12 @@ using Tienda_G6_Api.Models;
 
 namespace Tienda_G6_Api.Controllers
 {
-//    [Authorize]
+    //[Authorize]
     public class RolController : ApiController
     {
-
         [HttpGet]
-        [Route("api/ObtenerRoles")]
-        public IHttpActionResult ObtenerRoles()
+        [Route("api/ConsultarRoles")]
+        public IHttpActionResult ConsultarRoles()
         {
             try
             {
@@ -48,14 +47,14 @@ namespace Tienda_G6_Api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error al obtener roles: " + ex.Message);
+                Console.WriteLine("Error al Consultar roles: " + ex.Message);
                 return InternalServerError();
             }
         }
 
         [HttpGet]
         [Route("api/ConsultarRol")]
-        public IHttpActionResult ConsultarRol(long q)
+        public HttpResponseMessage ConsultarRol(long q)
         {
             try
             {
@@ -67,47 +66,84 @@ namespace Tienda_G6_Api.Controllers
 
                     if (rol != null)
                     {
-                        return Ok(new RolEnt
+                        var successResponse = new
                         {
-                            IdRol = rol.IdRol,
-                            NombreRol = rol.NombreRol
-                        });
+                            mensaje = "Consulta de rol exitosa.",
+                            data = new RolEnt
+                            {
+                                IdRol = rol.IdRol,
+                                NombreRol = rol.NombreRol
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Rol con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Rol con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar rol: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarRol")]
-        public IHttpActionResult AgregarRol(RolEnt entidad)
+        public HttpResponseMessage AgregarRol(RolEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto rol no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto rol no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto rol.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-
-                    // Verificar si el nombre del rol ya existe en la base de datos
                     if (bd.Rol.Any(r => r.NombreRol == entidad.NombreRol))
                     {
                         ModelState.AddModelError("NombreRol", "El nombre de rol ya existe en la base de datos.");
-                        return BadRequest(ModelState);
+                        var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                .Select(e => e.ErrorMessage)
+                                                                .ToList();
+                        var errorResponse = new
+                        {
+                            mensaje = "Error al agregar rol.",
+                            errores = validationErrors
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                     }
 
                     var rol = new Rol
@@ -118,91 +154,148 @@ namespace Tienda_G6_Api.Controllers
                     bd.Rol.Add(rol);
                     bd.SaveChanges();
 
-                    return Ok("Rol agregado exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Rol agregado exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar rol: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarRol")]
-        public IHttpActionResult ActualizarRol(RolEnt entidad)
+        public HttpResponseMessage ActualizarRol(RolEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto rol no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto rol no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto rol.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    // Verificar si el nombre del rol ya existe en la base de datos (excepto el rol actual)
-                    if (bd.Rol.Any(r => r.NombreRol == entidad.NombreRol && r.IdRol != entidad.IdRol))
+                    // Verificar si el nombre de rol ya existe en la base de datos (sin importar el IdRol)
+                    var nombreExistente = bd.Rol.FirstOrDefault(r => r.NombreRol == entidad.NombreRol);
+
+                    if (nombreExistente != null)
                     {
-                        ModelState.AddModelError("NombreRol", "El nombre de rol ya existe en la base de datos.");
-                        return BadRequest(ModelState);
+                        // Si el nombre existe y no pertenece al registro actual, mostrar un error.
+                        if (nombreExistente.IdRol != entidad.IdRol)
+                        {
+                            ModelState.AddModelError("NombreRol", "El nombre de rol ya existe en la base de datos.");
+                            var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                    .Select(e => e.ErrorMessage)
+                                                                    .ToList();
+                            var errorResponse = new
+                            {
+                                mensaje = "Error al agregar rol.",
+                                errores = validationErrors
+                            };
+
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
+                        }
                     }
 
-                    var rol = (from x in bd.Rol
-                               where x.IdRol == entidad.IdRol
-                               select x).FirstOrDefault();
+                    var rol = bd.Rol.FirstOrDefault(r => r.IdRol == entidad.IdRol);
 
                     if (rol != null)
                     {
                         rol.NombreRol = entidad.NombreRol;
                         bd.SaveChanges();
-                        return Ok("Rol actualizado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Rol actualizado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Rol con ID '{entidad.IdRol}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Rol con ID '{entidad.IdRol}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar rol: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarRol")]
-        public IHttpActionResult EliminarRol(long q)
+        public HttpResponseMessage EliminarRol(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var rol = (from x in bd.Rol
-                               where x.IdRol == q
-                               select x).FirstOrDefault();
+                    var rol = bd.Rol.FirstOrDefault(r => r.IdRol == q);
 
                     if (rol != null)
                     {
                         bd.Rol.Remove(rol);
                         bd.SaveChanges();
-                        return Ok("Rol eliminado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Rol eliminado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Rol con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Rol con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar rol: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
-
-
     }
+
 }

@@ -33,8 +33,8 @@ namespace Tienda_G6_Api.Controllers
                                 IdCategoria = item.IdCategoria,
                                 Descripcion = item.Descripcion,
                                 Detalle = item.Detalle,
-                                Existencia = item.Existencia,
                                 Precio = item.Precio,
+                                Existencia = item.Existencia,
                                 Estado = item.Estado
                             });
                         }
@@ -54,7 +54,7 @@ namespace Tienda_G6_Api.Controllers
 
         [HttpGet]
         [Route("api/ConsultarArticulo")]
-        public IHttpActionResult ConsultarArticulo(long q)
+        public HttpResponseMessage ConsultarArticulo(long q)
         {
             try
             {
@@ -66,139 +66,249 @@ namespace Tienda_G6_Api.Controllers
 
                     if (articulo != null)
                     {
-                        return Ok(new ArticuloEnt
+                        var successResponse = new
                         {
-                            IdArticulo = articulo.IdArticulo,
-                            IdCategoria = articulo.IdCategoria,
-                            Descripcion = articulo.Descripcion,
-                            Detalle = articulo.Detalle,
-                            Existencia = articulo.Existencia,
-                            Precio = articulo.Precio,
-                            Estado = articulo.Estado
-                        });
+                            mensaje = "Consulta de artículo exitosa.",
+                            data = new ArticuloEnt
+                            {
+                                IdArticulo = articulo.IdArticulo,
+                                IdCategoria = articulo.IdCategoria,
+                                Descripcion = articulo.Descripcion,
+                                Detalle = articulo.Detalle,
+                                Precio = articulo.Precio,
+                                Existencia = articulo.Existencia,
+                                Estado = articulo.Estado
+                            }
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Artículo con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Artículo con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al consultar artículo: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpPost]
         [Route("api/AgregarArticulo")]
-        public IHttpActionResult AgregarArticulo(ArticuloEnt entidad)
+        public HttpResponseMessage AgregarArticulo(ArticuloEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto artículo no puede ser nulo.");
+                    var errorResponse = new
+                    {
+                        mensaje = "El objeto artículo no puede ser nulo."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errors = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList();
+
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto artículo.",
+                        errores = errors
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
+                    if (bd.Articulo.Any(a => a.Descripcion == entidad.Descripcion))
+                    {
+                        ModelState.AddModelError("Descripcion", "La descripción de artículo ya existe en la base de datos.");
+                        var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                .Select(e => e.ErrorMessage)
+                                                                .ToList();
+                        var errorResponse = new
+                        {
+                            mensaje = "Error al agregar artículo.",
+                            errores = validationErrors
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
+                    }
+
                     var articulo = new Articulo
                     {
                         IdCategoria = entidad.IdCategoria,
                         Descripcion = entidad.Descripcion,
                         Detalle = entidad.Detalle,
-                        Existencia = entidad.Existencia,
                         Precio = entidad.Precio,
+                        Existencia = entidad.Existencia,
                         Estado = entidad.Estado
                     };
 
                     bd.Articulo.Add(articulo);
                     bd.SaveChanges();
 
-                    return Ok("Artículo agregado exitosamente.");
+                    var successResponse = new
+                    {
+                        mensaje = "Artículo agregado exitosamente."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al registrar artículo: " + ex.Message);
-                return InternalServerError();
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, new { mensaje = "Error interno del servidor." });
             }
         }
 
         [HttpPut]
         [Route("api/ActualizarArticulo")]
-        public IHttpActionResult ActualizarArticulo(ArticuloEnt entidad)
+        public HttpResponseMessage ActualizarArticulo(ArticuloEnt entidad)
         {
             try
             {
                 if (entidad == null)
                 {
-                    return BadRequest("El objeto artículo no puede ser nulo.");
+                    var badRequestResponse = new
+                    {
+                        mensaje = "El objeto artículo no puede ser nulo."
+                    };
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, badRequestResponse);
                 }
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    var errorResponse = new
+                    {
+                        mensaje = "Error de validación en el objeto artículo.",
+                        errores = ModelState.Values.SelectMany(v => v.Errors)
+                                                   .Select(e => e.ErrorMessage)
+                                                   .ToList()
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
                 }
 
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var articulo = (from x in bd.Articulo
-                                    where x.IdArticulo == entidad.IdArticulo
-                                    select x).FirstOrDefault();
+                    // Verificar si la descripción de artículo ya existe en la base de datos (sin importar el IdArticulo)
+                    var descripcionExistente = bd.Articulo.FirstOrDefault(a => a.Descripcion == entidad.Descripcion);
+
+                    if (descripcionExistente != null)
+                    {
+                        // Si la descripción existe y no pertenece al registro actual, mostrar un error.
+                        if (descripcionExistente.IdArticulo != entidad.IdArticulo)
+                        {
+                            ModelState.AddModelError("Descripcion", "La descripción de artículo ya existe en la base de datos.");
+                            var validationErrors = ModelState.Values.SelectMany(v => v.Errors)
+                                                                    .Select(e => e.ErrorMessage)
+                                                                    .ToList();
+                            var errorResponse = new
+                            {
+                                mensaje = "Error al agregar artículo.",
+                                errores = validationErrors
+                            };
+
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, errorResponse);
+                        }
+                    }
+
+                    var articulo = bd.Articulo.FirstOrDefault(a => a.IdArticulo == entidad.IdArticulo);
 
                     if (articulo != null)
                     {
                         articulo.IdCategoria = entidad.IdCategoria;
                         articulo.Descripcion = entidad.Descripcion;
                         articulo.Detalle = entidad.Detalle;
-                        articulo.Existencia = entidad.Existencia;
                         articulo.Precio = entidad.Precio;
+                        articulo.Existencia = entidad.Existencia;
                         articulo.Estado = entidad.Estado;
                         bd.SaveChanges();
-                        return Ok("Artículo actualizado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Artículo actualizado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Artículo con ID '{entidad.IdArticulo}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Artículo con ID '{entidad.IdArticulo}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al actualizar artículo: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
 
         [HttpDelete]
         [Route("api/EliminarArticulo")]
-        public IHttpActionResult EliminarArticulo(long q)
+        public HttpResponseMessage EliminarArticulo(long q)
         {
             try
             {
                 using (var bd = new Tienda_G6Entities1())
                 {
-                    var articulo = (from x in bd.Articulo
-                                    where x.IdArticulo == q
-                                    select x).FirstOrDefault();
+                    var articulo = bd.Articulo.FirstOrDefault(a => a.IdArticulo == q);
 
                     if (articulo != null)
                     {
                         bd.Articulo.Remove(articulo);
                         bd.SaveChanges();
-                        return Ok("Artículo eliminado con éxito.");
+
+                        var successResponse = new
+                        {
+                            mensaje = "Artículo eliminado con éxito."
+                        };
+
+                        return Request.CreateResponse(HttpStatusCode.OK, successResponse);
                     }
 
-                    return BadRequest($"Artículo con ID '{q}' no encontrado en la base de datos.");
+                    var notFoundResponse = new
+                    {
+                        mensaje = $"Artículo con ID '{q}' no encontrado en la base de datos."
+                    };
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, notFoundResponse);
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar artículo: " + ex.Message);
-                return InternalServerError();
+                var errorResponse = new
+                {
+                    mensaje = "Error interno del servidor."
+                };
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, errorResponse);
             }
         }
     }
