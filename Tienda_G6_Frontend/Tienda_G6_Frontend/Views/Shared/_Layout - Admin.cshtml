@@ -67,7 +67,7 @@
             <!-- Brand Logo -->
             <a href="@Url.Action("Index", "Home")" class="brand-link">
                 <img src="~/AdminStyles/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                <span class="brand-text font-weight-light"></span>
+                <span class="brand-text font-weight-light">@Session["RolUsuario"]</span>
             </a>
             <!-- Sidebar -->
             <div class="sidebar">
@@ -77,76 +77,118 @@
                         <img src="~/AdminStyles/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Nombre del usuario</a>
+                        <a href="" class="d-block">@Session["NombreUsuario"]</a>
                     </div>
                 </div>
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <li class="nav-item">
-                            <a href="index" class="nav-link">
-                                <i class="nav-icon fas fa-chart-bar"></i>
-                                <p>
-                                    Reportes
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("Index", "Usuario")" class="nav-link">
-                                <i class="nav-icon fas fa-users-cog"></i>
-                                <p>
-                                    Usuarios
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-solid fa-check-double"></i>
-                                <p>
-                                    Roles
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-users"></i>
-                                <p>
-                                    Clientes
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-tags"></i>
-                                <p>
-                                    Articulos
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="@Url.Action("Index", "Categoria")" class="nav-link">
-                                <i class="nav-icon fas fa-plus"></i>
-                                <p>
-                                    Categorias
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-cart"></i>
-                                <p>
-                                    Ventas
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice"></i>
-                                <p>
-                                    Facturas
-                                </p>
-                            </a>
-                        </li>
+                        @if (Session["IdRolUsuario"] != null && Session["IdRolUsuario"].ToString() == "1")
+                        {
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Bitacora")" class="nav-link">
+                                    <i class="nav-icon fas fa-chart-bar"></i>
+                                    <p>
+                                        Bitacoras
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Usuario")" class="nav-link">
+                                    <i class="nav-icon fas fa-users-cog"></i>
+                                    <p>
+                                        Usuarios
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Rol")" class="nav-link">
+                                    <i class="nav-icon fas fa-solid fa-check-double"></i>
+                                    <p>
+                                        Roles
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Cliente")" class="nav-link">
+                                    <i class="nav-icon fas fa-users"></i>
+                                    <p>
+                                        Clientes
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Articulo")" class="nav-link">
+                                    <i class="nav-icon fas fa-tags"></i>
+                                    <p>
+                                        Articulos
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Categoria")" class="nav-link">
+                                    <i class="nav-icon fas fa-plus"></i>
+                                    <p>
+                                        Categorias
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Venta")" class="nav-link">
+                                    <i class="nav-icon fas fa-shopping-cart"></i>
+                                    <p>
+                                        Ventas
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Factura")" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice"></i>
+                                    <p>
+                                        Facturas
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        else if (Session["IdRolUsuario"] != null && Session["IdRolUsuario"].ToString() == "2")
+                        {
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Factura")" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice"></i>
+                                    <p>
+                                        Facturas
+                                    </p>
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Código para mostrar las vistas de Articulos, Ventas y Facturas para el rol 2 -->
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Articulo")" class="nav-link">
+                                    <i class="nav-icon fas fa-tags"></i>
+                                    <p>
+                                        Articulos
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Venta")" class="nav-link">
+                                    <i class="nav-icon fas fa-shopping-cart"></i>
+                                    <p>
+                                        Ventas
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="@Url.Action("Index", "Factura")" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice"></i>
+                                    <p>
+                                        Facturas
+                                    </p>
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

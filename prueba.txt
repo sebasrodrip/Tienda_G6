@@ -192,3 +192,11 @@ Operación exitosa: Usuario actualizado con éxito.
 Operación exitosa: Usuario actualizado con éxito.
 Operación exitosa: Usuario actualizado con éxito.
 Error en la solicitud: El correo ya existe en la base de datos.
+Error en la solicitud: El correo ya existe en la base de datos.
+Error en la solicitud: Error en la solicitud al servidor.
+Error en la solicitud: Error en la solicitud al servidor.
+Operación exitosa: Usuario agregado exitosamente.
+Operación exitosa: Categoría eliminada con éxito.
+Error en la solicitud: Categoría con ID '45' no encontrada en la base de datos.
+Operación exitosa: Categoría actualizada con éxito.
+Operación exitosa: Categoría agregada exitosamente.

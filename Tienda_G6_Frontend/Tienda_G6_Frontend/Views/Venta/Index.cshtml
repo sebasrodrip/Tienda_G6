@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Categorias";
+    ViewBag.Title = "Ventas";
     Layout = "~/Views/Shared/_Layout - Admin.cshtml";
 }
 
@@ -8,14 +8,14 @@
 
 @section header {
     <div class="col-sm-6">
-        <h1 class="m-0">Gestión de Categorias de Articulos</h1>
+        <h1 class="m-0">Gestión de Categorias de Ventas</h1>
     </div>
     <div class="col-sm-6">
         <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item">
                 <a href="#">Panel Administrador</a>
             </li>
-            <li class="breadcrumb-item active">Categorías</li>
+            <li class="breadcrumb-item active">Ventas</li>
         </ol>
     </div>
 }
@@ -210,7 +210,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p>¿Estás seguro de que deseas eliminar esta categoría?</p>
+                <p>¿Estás seguro de que deseas eliminar esta venta?</p>
                 <form id="eliminarVentaForm">
                     <input type="hidden" name="q" id="ventaIdEliminar" />
                 </form>
@@ -229,7 +229,7 @@
     <div class="col-md-12">
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="">Agregar Categoria</h3>
+                <h3 class="">Agregar Venta</h3>
             </div>
             <form id="formularioVenta">
                 <fieldset>
@@ -270,7 +270,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h3 class="">Lista de Categorías</h3>
+                <h3 class="">Lista de Ventas</h3>
                 <button type="button" id="btnRecargar" class="btn btn-primary ml-auto" style="display: none;"><i class="fas fa-sync-alt"></i></button>
                 <button type="button" id="btnToggleForm" class="btn btn-primary ml-auto"><i class="fas fa-plus"></i></button>
             </div>

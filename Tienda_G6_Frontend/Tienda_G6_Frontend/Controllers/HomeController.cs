@@ -11,6 +11,7 @@ namespace Tienda_G6_Frontend.Controllers
     public class HomeController : Controller
     {
         UsuarioModel model = new UsuarioModel();
+        ArticuloModel modelArticulos = new ArticuloModel();
 
         [HttpGet]
         public ActionResult Login()
@@ -37,7 +38,12 @@ namespace Tienda_G6_Frontend.Controllers
             return View();
         }
 
-
+        [HttpGet]
+        public ActionResult CerrarSesion()
+        {
+            Session.Clear();
+            return RedirectToAction("Login", "Home");
+        }
 
         [HttpPost]
         public ActionResult IniciarSesion(UsuarioEnt entidad)
@@ -57,7 +63,7 @@ namespace Tienda_G6_Frontend.Controllers
                     Session["IdRolUsuario"] = resp.IdRol;
                     Session["TokenUsuario"] = resp.Token;
 
-                    return RedirectToAction("", "Inicio");
+                    return RedirectToAction("", "Bitacora");
                 }
                 else
                 {
@@ -74,7 +80,8 @@ namespace Tienda_G6_Frontend.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            var articulos = modelArticulos.ConsultarArticulos();
+            return View(articulos);
         }
 
         [HttpGet]

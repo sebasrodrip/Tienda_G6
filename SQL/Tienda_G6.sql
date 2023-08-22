@@ -78,11 +78,11 @@ VALUES ('ADMINISTRADOR');
 
 -- Insertar el rol "administrador"
 INSERT INTO Rol (NombreRol)
-VALUES ('NORMAL');
+VALUES ('CLIENTE');
 
 -- Insertar el rol "normal"
 INSERT INTO Rol (NombreRol)
-VALUES ('CLIENTE');
+VALUES ('EMPLEADO');
 
 -- Crear tabla Usuario
 CREATE TABLE Usuario (

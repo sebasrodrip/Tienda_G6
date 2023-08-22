@@ -184,6 +184,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\ArticuloController.cs" />
     <Compile Include="Controllers\BitacoraController.cs" />
+    <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\CategoriaController.cs" />
     <Compile Include="Controllers\ClienteController.cs" />
     <Compile Include="Controllers\CreditoController.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Controllers\VentaController.cs" />
     <Compile Include="Entities\ArticuloEnt.cs" />
     <Compile Include="Entities\BitacoraEnt.cs" />
+    <Compile Include="Entities\CarritoEnt.cs" />
     <Compile Include="Entities\CategoriaEnt.cs" />
     <Compile Include="Entities\ClienteEnt.cs" />
     <Compile Include="Entities\CreditoEnt.cs" />
@@ -207,6 +209,7 @@
     </Compile>
     <Compile Include="Models\ArticuloModel.cs" />
     <Compile Include="Models\BitacoraModel.cs" />
+    <Compile Include="Models\CarritoModel.cs" />
     <Compile Include="Models\CategoriaModel.cs" />
     <Compile Include="Models\ClienteModel.cs" />
     <Compile Include="Models\CreditoModel.cs" />
@@ -7402,6 +7405,7 @@
     <Content Include="Views\Articulo\Index.cshtml" />
     <Content Include="Views\Cliente\Index.cshtml" />
     <Content Include="Views\Bitacora\Index.cshtml" />
+    <Content Include="Views\Carrito\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

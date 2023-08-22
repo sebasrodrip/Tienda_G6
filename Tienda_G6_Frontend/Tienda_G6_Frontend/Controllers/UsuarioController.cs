@@ -8,7 +8,6 @@ using Tienda_G6_Frontend.Models;
 
 namespace Tienda_G6_Frontend.Controllers
 {
-    [RoutePrefix("Panel_Administrador")]
     public class UsuarioController : Controller
     {
         UsuarioModel model = new UsuarioModel();
