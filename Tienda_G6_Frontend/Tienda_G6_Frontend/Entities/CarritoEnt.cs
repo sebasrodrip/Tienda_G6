@@ -15,7 +15,7 @@ namespace Tienda_G6_Frontend.Entities
         [Required(ErrorMessage = "La fecha es obligatorio.")]
         public DateTime Fecha { get; set; }
 
-        public float Precio { get; set; }
+        public decimal Precio { get; set; }
         public string Descripcion { get; set; }
         public string Detalle { get; set; }
 

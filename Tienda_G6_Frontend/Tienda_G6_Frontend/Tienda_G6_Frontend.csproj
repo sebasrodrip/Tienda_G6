@@ -6026,6 +6026,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="imgs\GBE21DGKBB.jpg" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -7364,6 +7365,10 @@
     <Content Include="AdminStyles\plugins\summernote\summernote.js.map" />
     <Content Include="AdminStyles\plugins\summernote\summernote.min.js.map" />
     <Content Include="AdminStyles\plugins\toastr\toastr.js.map" />
+    <Content Include="imgs\LRS0S2706D.avif" />
+    <Content Include="imgs\RB38A7B6D22EF.avif" />
+    <Content Include="imgs\RH68B8841S9EF.avif" />
+    <Content Include="imgs\VS28C9784QK.avif" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />

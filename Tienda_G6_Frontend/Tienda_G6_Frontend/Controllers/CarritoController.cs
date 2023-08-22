@@ -16,85 +16,85 @@ namespace Tienda_G6_Frontend.Controllers
             return View();
         }
 
-        //    CarritoModel carrito = new CarritoModel();
-        //    ArticuloModel articulo = new ArticuloModel();
+        CarritoModel carrito = new CarritoModel();
+        ArticuloModel articulo = new ArticuloModel();
 
-        //    [HttpGet]
-        //    public ActionResult AgregarArticuloCarrito(long q)
-        //    {
-        //        CarritoEnt entidad = new CarritoEnt();
-        //        entidad.Fecha = DateTime.Now;
-        //        entidad.IdArticulo = q;
-        //        entidad.IdCliente = long.Parse(Session["IdUsuario"].ToString());
+        [HttpGet]
+        public ActionResult AgregarArticuloCarrito(long q)
+        {
+            CarritoEnt entidad = new CarritoEnt();
+            entidad.Fecha = DateTime.Now;
+            entidad.IdArticulo = q;
+            entidad.IdCliente = long.Parse(Session["IdUsuario"].ToString());
 
-        //        var respuesta = carrito.AgregarArticuloCarrito(entidad);
-        //        ActualizarDatosSesion();
+            var respuesta = carrito.AgregarArticuloCarrito(entidad);
+            ActualizarDatosSesion();
 
-        //        if (respuesta > 0)
-        //        {
-        //            return RedirectToAction("Index", "Home");
-        //        }
-        //        else
-        //        {
-        //            var articulos = articulo.ConsultarArticulos();
-        //            ViewBag.MsjPantalla = "El Articulo ya fue comprado o agregado a su carrito";
-        //            return View("../Home/Index", articulos);
-        //        }
-        //    }
-
-
-        //    [HttpGet]
-        //    public ActionResult RemoverArticuloCarrito(long q)
-        //    {
-        //        var respuesta = carrito.RemoverArticuloCarrito(q);
-        //        ActualizarDatosSesion();
-
-        //        if (respuesta > 0)
-        //        {
-        //            return RedirectToAction("VerCarrito", "Carrito");
-        //        }
-        //        else
-        //        {
-        //            ViewBag.MsjPantalla = "No se pudo remover el Articulo de su carrito";
-        //            return View("VerCarrito");
-        //        }
-        //    }
+            if (respuesta > 0)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                var articulos = articulo.ConsultarArticulos();
+                ViewBag.MsjPantalla = "El Articulo ya fue comprado o agregado a su carrito";
+                return View("../Home/Index", articulos);
+            }
+        }
 
 
-        //    public void ActualizarDatosSesion()
-        //    {
-        //        var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
-        //        Session["CantidadArticulo"] = datos.Count();
-        //        Session["SubTotalArticulos"] = datos.Sum(x => x.Precio);
-        //        Session["TotalArticulos"] = datos.Sum(x => x.Precio) + (datos.Sum(x => x.Precio) * 0.13M);
-        //    }
+        [HttpGet]
+        public ActionResult RemoverArticuloCarrito(long q)
+        {
+            var respuesta = carrito.RemoverArticuloCarrito(q);
+            ActualizarDatosSesion();
+
+            if (respuesta > 0)
+            {
+                return RedirectToAction("VerCarrito", "Carrito");
+            }
+            else
+            {
+                ViewBag.MsjPantalla = "No se pudo remover el Articulo de su carrito";
+                return View("VerCarrito");
+            }
+        }
 
 
-        //    [HttpGet]
-        //    public ActionResult VerCarrito()
-        //    {
-        //        var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
-        //        return View(datos);
-        //    }
+        public void ActualizarDatosSesion()
+        {
+            var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
+            Session["CantidadArticulo"] = datos.Count();
+            Session["SubTotalArticulos"] = datos.Sum(x => x.Precio);
+            Session["TotalArticulos"] = datos.Sum(x => x.Precio) + (datos.Sum(x => x.Precio) * 0.13M);
+        }
 
 
-        //    [HttpGet]
-        //    public ActionResult VerMisArticuloss()
-        //    {
-        //        var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
-        //        return View(datos);
-        //    }
+        [HttpGet]
+        public ActionResult VerCarrito()
+        {
+            var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
+            return View(datos);
+        }
 
 
-        //    [HttpPost]
-        //    public ActionResult ConfirmarPago()
-        //    {
-        //        CarritoEnt entidad = new CarritoEnt();
-        //        entidad.IdCliente = long.Parse(Session["IdUsuario"].ToString());
+        [HttpGet]
+        public ActionResult VerMisArticuloss()
+        {
+            var datos = carrito.ConsultarArticulosCliente(long.Parse(Session["IdUsuario"].ToString()));
+            return View(datos);
+        }
 
-        //        carrito.PagarArticuloCarrito(entidad);
-        //        return RedirectToAction("Index", "Home");
-        //    }
+
+        [HttpPost]
+        public ActionResult ConfirmarPago()
+        {
+            CarritoEnt entidad = new CarritoEnt();
+            entidad.IdCliente = long.Parse(Session["IdUsuario"].ToString());
+
+            carrito.PagarArticuloCarrito(entidad);
+            return RedirectToAction("Index", "Home");
+        }
 
     }
 }

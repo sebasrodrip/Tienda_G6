@@ -137,5 +137,10 @@ namespace Tienda_G6_Frontend.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult Cambiar()
+        {
+            return View();
+        }
     }
 }

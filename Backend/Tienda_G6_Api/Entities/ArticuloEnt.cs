@@ -22,7 +22,7 @@ namespace Tienda_G6_Api.Entities
         public string Detalle { get; set; }
 
         [Required(ErrorMessage = "El Precio es obligatorio.")]
-        public double Precio { get; set; }
+        public decimal Precio { get; set; }
 
         [Required(ErrorMessage = "La Existencia es obligatoria.")]
         public int Existencia { get; set; }
