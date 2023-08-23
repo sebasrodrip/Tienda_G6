@@ -5,7 +5,6 @@ GO
 -- Usar la base de datos recién creada
 USE Tienda_G6;
 GO
-
 -- Crear tabla Categoria
 CREATE TABLE Categoria (
     IdCategoria bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
@@ -13,58 +12,63 @@ CREATE TABLE Categoria (
     Estado bit NOT NULL
 );
 
--- Insertar la categoría 'Medicamentos' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Medicamentos', 1);
+VALUES ('Bespoke', 1);
 
--- Insertar la categoría 'Vitaminas' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Vitaminas', 1);
+VALUES ('Aspiradoras', 1);
 
--- Insertar la categoría 'Suplementos' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Suplementos', 1);
+VALUES ('Refrigeradoras', 1);
 
--- Insertar la categoría 'Productos para el dolor' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Productos para el dolor', 1);
+VALUES ('Lavadoras y Secadoras', 1);
 
--- Insertar la categoría 'Cuidado de la piel' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Cuidado de la piel', 1);
+VALUES ('Cocinas', 1);
 
--- Insertar la categoría 'Cuidado capilar' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Cuidado capilar', 1);
+VALUES ('Lavavajillas', 1);
 
--- Insertar la categoría 'Higiene oral' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Higiene oral', 1);
+VALUES ('Microondas', 1);
 
--- Insertar la categoría 'Productos para bebés' en SQL Server
 INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Productos para bebés', 1);
+VALUES ('Electrodomesticos Pequeños', 1);
 
--- Insertar la categoría 'Productos para la digestión' en SQL Server
-INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Productos para la digestión', 1);
-
--- Insertar la categoría 'Cuidado de heridas' en SQL Server
-INSERT INTO Categoria (Descripcion, Estado)
-VALUES ('Cuidado de heridas', 1);
-
+SELECT * FROM Categoria
 
 -- Crear tabla Articulo
 CREATE TABLE Articulo (
     IdArticulo bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
     IdCategoria bigint NOT NULL,
-    Descripcion varchar(20) NOT NULL,
-    Detalle varchar(20) NOT NULL,
-    Precio float NOT NULL,
+    Descripcion varchar(50) NOT NULL,
+    Detalle varchar(50) NOT NULL,
+    Precio decimal(18,2) NOT NULL,
     Existencia int NOT NULL,
     Estado bit NOT NULL,
     FOREIGN KEY (IdCategoria) REFERENCES Categoria (IdCategoria) -- Clave foránea a la tabla Categoria
 );
+
+
+
+INSERT INTO Articulo (IdCategoria, Descripcion, Detalle, Precio, Existencia, Estado)
+VALUES (3, 'Refrigeradora GE', 'GBE21DGKBB',  1449.00, 1, 1);
+
+INSERT INTO Articulo (IdCategoria, Descripcion, Detalle, Precio, Existencia, Estado)
+VALUES (3, 'Refrigeradora Samsung', 'RH68B8841S9EF',  1199.00, 1, 1);
+
+INSERT INTO Articulo (IdCategoria, Descripcion, Detalle, Precio, Existencia, Estado)
+VALUES (3, 'Refrigeradora LG', 'LRSOS2706D',  2332.00, 1, 1);
+
+INSERT INTO Articulo (IdCategoria, Descripcion, Detalle, Precio, Existencia, Estado)
+VALUES (2, 'Aspiradora Samsung', 'VS28C9784QK',  2332.00, 1, 1);
+
+INSERT INTO Articulo (IdCategoria, Descripcion, Detalle, Precio, Existencia, Estado)
+VALUES (3, 'Refrigeradora Bespoke Samsung', 'RB38A7B6D22EF',  999.00, 1, 1);
+
+SELECT * FROM Articulo;
+
 
 -- Crear tabla Rol
 CREATE TABLE Rol (
@@ -78,11 +82,11 @@ VALUES ('ADMINISTRADOR');
 
 -- Insertar el rol "administrador"
 INSERT INTO Rol (NombreRol)
-VALUES ('CLIENTE');
+VALUES ('NORMAL');
 
 -- Insertar el rol "normal"
 INSERT INTO Rol (NombreRol)
-VALUES ('EMPLEADO');
+VALUES ('CLIENTE');
 
 -- Crear tabla Usuario
 CREATE TABLE Usuario (
@@ -93,8 +97,8 @@ CREATE TABLE Usuario (
     Contrasenna varchar(MAX) NOT NULL,
     Estado bit NOT NULL,
     IdRol int NOT NULL,
-	ClaveTemporal bit NULL,
-	Caducidad datetime NULL,
+    ClaveTemporal bit NULL,
+    Caducidad datetime NULL,
     FOREIGN KEY (IdRol) REFERENCES Rol (IdRol) -- Clave foránea a la tabla Rol
 );
 
@@ -129,10 +133,14 @@ CREATE TABLE Cliente (
     IdCliente bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
     IdUsuario bigint NOT NULL,
     IdCredito int NOT NULL DEFAULT 1,
+    IdArticulo bigint NOT NULL,
     Nombre varchar(20) NOT NULL,
     Apellidos varchar(20) NOT NULL,
     Email varchar(20) NOT NULL,
     Telefono varchar(15) NOT NULL,
+    PrecioPago decimal(18,2) NOT NULL,
+    FechaPago datetime NOT NULL,
+    FOREIGN KEY (IdArticulo) REFERENCES Articulo (IdArticulo),
     FOREIGN KEY (IdUsuario) REFERENCES Usuario (IdUsuario), -- Clave foránea a la tabla Usuario
     FOREIGN KEY (IdCredito) REFERENCES Credito (IdCredito) -- Clave foránea a la tabla Credito
 );
@@ -169,8 +177,19 @@ CREATE TABLE Bitacora (
     FOREIGN KEY (IdUsuario) REFERENCES Usuario (IdUsuario) -- Clave foránea a la tabla Usuario
 );
 
+-- Crear tabla carrito
+CREATE TABLE Carrito (
+    IdCarrito bigint IDENTITY(1,1) NOT NULL PRIMARY KEY,
+    IdCliente bigint NOT NULL,
+    IdArticulo bigint NOT NULL,
+    Fecha datetime NOT NULL,
+    FOREIGN KEY (IdCliente) REFERENCES Cliente (IdCliente), -- Clave foránea a la tabla Cliente
+    FOREIGN KEY (IdArticulo) REFERENCES Articulo (IdArticulo) -- Clave foránea a la tabla Articulo
+);
+
 -- Procedimientos Almacenados
-CREATE OR ALTER PROCEDURE [dbo].[RegistrarBitacora] 
+GO
+CREATE PROCEDURE [dbo].[RegistrarBitacora] 
 	@MensajeError	VARCHAR(5000), 
 	@Origen			VARCHAR(5000), 
 	@IdUsuario		BIGINT, 
